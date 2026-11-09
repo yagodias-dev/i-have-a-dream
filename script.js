@@ -231,5 +231,85 @@
     update();
   })();
 
+  /* ---------- Momentos: 381 dias, frase do sonho e rota de Selma ---------- */
+  (function moments() {
+    /* 381 pontos que acendem em sequência quando o bloco aparece */
+    var grid = $('.days__grid');
+    if (grid) {
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < 381; i++) frag.appendChild(document.createElement('i'));
+      grid.appendChild(frag);
+      var dots = $$('i', grid);
+      var count = $('.days__count');
+      var fill = function () {
+        if (reduced()) { dots.forEach(function (d) { d.classList.add('is-on'); }); return; }
+        var n = 0;
+        var step = function () {
+          var to = Math.min(381, n + 9);
+          for (; n < to; n++) dots[n].classList.add('is-on');
+          if (count) count.textContent = n;
+          if (n < 381) requestAnimationFrame(step);
+        };
+        if (count) count.textContent = '0';
+        step();
+      };
+      if ('IntersectionObserver' in window && !reduced()) {
+        var io = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { fill(); io.disconnect(); }
+        }, { threshold: 0.4 });
+        io.observe(grid);
+      } else fill();
+    }
+
+    /* Frase do sonho: as palavras se iluminam conforme a rolagem */
+    var dream = $('[data-dream]');
+    var words = [];
+    if (dream && !reduced()) {
+      (function wrap(node) {
+        Array.prototype.slice.call(node.childNodes).forEach(function (c) {
+          if (c.nodeType === 3) {
+            var frag = document.createDocumentFragment();
+            c.textContent.split(/(\s+)/).forEach(function (p) {
+              if (!p) return;
+              if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+              var s = document.createElement('span');
+              s.className = 'dw';
+              s.setAttribute('aria-hidden', 'true');
+              s.textContent = p;
+              frag.appendChild(s);
+              words.push(s);
+            });
+            c.parentNode.replaceChild(frag, c);
+          } else if (c.nodeType === 1) wrap(c);
+        });
+      })(dream);
+    }
+
+    var route = $('.route');
+    var ticking = false;
+    function progress(el, start, end) {
+      var r = el.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var p = (vh * start - r.top) / (vh * (start - end) + r.height);
+      return Math.min(1, Math.max(0, p));
+    }
+    function update() {
+      ticking = false;
+      if (words.length) {
+        var p = progress(dream, 0.85, 0.35);
+        var lit = Math.round(p * words.length);
+        words.forEach(function (w, k) { w.classList.toggle('is-lit', k < lit); });
+      }
+      if (route && !reduced()) route.style.setProperty('--route', progress(route, 0.9, 0.4).toFixed(3));
+    }
+    if (route && reduced()) route.style.setProperty('--route', '1');
+    if (words.length || route) {
+      window.addEventListener('scroll', function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+      }, { passive: true });
+      update();
+    }
+  })();
+
   /* <!-- JS-SECOES --> */
 })();

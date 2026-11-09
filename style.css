@@ -908,4 +908,309 @@ main:focus-visible { outline: none; }
   .chrono__list div { grid-template-columns: 1fr; gap: 2px; }
 }
 
+/* 7. MOMENTOS -------------------------------------------------------------- */
+.moment {
+  position: relative;
+  padding-block: clamp(72px, 10vw, 140px);
+  border-top: 1px solid var(--line);
+}
+.moment:first-of-type { border-top: 0; padding-top: 0; }
+.moment__num { display: flex; gap: 12px; margin-bottom: var(--s-2); }
+.moment__num span { color: var(--gold); }
+.moment__title {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 1.2rem + 2.8vw, 3.8rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 96;
+  line-height: 1.04;
+  letter-spacing: -.02em;
+  margin-bottom: var(--s-4);
+  text-wrap: balance;
+}
+.moment__title--wide { max-width: 18ch; }
+
+/* Duas colunas, foto à direita; --flip inverte */
+.moment--split {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
+}
+.moment--flip .moment__text { order: 2; }
+.moment--flip .moment__media { order: 1; }
+.moment__media { position: sticky; top: calc(var(--header-h) + 32px); }
+.moment__inset { width: 58%; margin: var(--s-4) 0 0 auto; }
+
+/* Fatos em destaque */
+.facts {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--s-3) var(--s-4);
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line-strong);
+}
+.fact { display: flex; flex-direction: column; gap: 6px; }
+.fact__num {
+  font-family: var(--f-display);
+  font-size: clamp(2.4rem, 1.6rem + 2vw, 3.6rem);
+  font-weight: 500;
+  font-variation-settings: "opsz" 96;
+  line-height: 1;
+  color: var(--gold);
+}
+.fact__label { font-size: var(--t-small); line-height: 1.45; color: var(--ink-2); }
+
+/* 381 dias */
+.days { margin-top: var(--s-5); }
+.days__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9px, 1fr));
+  gap: 4px;
+}
+.days__grid i {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: background-color 300ms var(--ease), transform 300ms var(--ease);
+}
+.days__grid i.is-on { background: var(--gold); }
+.days__legend { margin-top: var(--s-2); }
+.days__count { color: var(--gold); }
+
+/* SCLC: composição tipográfica */
+.moment__cols {
+  display: grid;
+  grid-template-columns: 6fr 5fr;
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
+}
+.note {
+  margin-top: var(--s-4);
+  padding-left: var(--s-3);
+  border-left: 2px solid var(--gold);
+}
+.note__tag { display: block; color: var(--gold); margin-bottom: 4px; }
+.principles__title { margin-bottom: var(--s-3); }
+.principles__list { list-style: none; counter-reset: p; }
+.principles__list li {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: var(--s-2);
+  align-items: baseline;
+  padding-block: 16px;
+  border-top: 1px solid var(--line);
+}
+.principles__list li:last-child { border-bottom: 1px solid var(--line); }
+.principles__list p { margin: 0; font-size: 1.1rem; line-height: 1.5; color: var(--ink-2); }
+.principles__n {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 1.6rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+/* Birmingham: a carta */
+.letter {
+  position: relative;
+  padding: clamp(28px, 4vw, 48px);
+  background: #e8dfcd;
+  color: #2a2219;
+  transform: rotate(-1deg);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(42, 34, 25, .1) 31px 32px);
+  transition: transform 600ms var(--ease);
+}
+.letter:hover { transform: rotate(0deg) translateY(-2px); }
+.letter .label { color: #5a4c3c; }
+.letter__date { margin-bottom: var(--s-4); }
+.letter__quote {
+  font-family: var(--f-display);
+  font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.4rem);
+  font-style: italic;
+  line-height: 1.2;
+  margin-bottom: var(--s-2);
+}
+.letter__pt { font-size: 1.05rem; color: #4a3d2f; margin-bottom: var(--s-4); }
+.letter__note { font-size: var(--t-small); color: #4a3d2f; line-height: 1.6; }
+.letter__sign {
+  margin: var(--s-4) 0 0;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 1.5rem;
+  text-align: right;
+  color: #8a2f1a;
+}
+.memorial {
+  margin-top: var(--s-4);
+  padding: var(--s-3);
+  border-left: 2px solid var(--brick);
+  background: color-mix(in srgb, var(--brick) 8%, transparent);
+  color: var(--ink-2);
+  max-width: 64ch;
+}
+
+/* Washington: foto em toda a largura */
+.moment--bleed { padding-top: clamp(72px, 10vw, 140px); }
+.moment__bleed {
+  max-width: none;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  aspect-ratio: auto;
+  height: min(88vh, 860px);
+  min-height: 420px;
+}
+.moment__bleed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(0deg, rgba(var(--shade), .96) 0%, rgba(var(--shade), .5) 40%, rgba(var(--shade), 0) 70%);
+  pointer-events: none;
+}
+.moment__over {
+  position: relative;
+  z-index: 3;
+  margin-top: calc(-1 * clamp(260px, 30vw, 380px));
+}
+.moment__over .moment__title { max-width: 16ch; }
+.facts--row { margin-top: var(--s-4); }
+.moment__bleed-credit { position: relative; z-index: 3; }
+.moment__cols--after { margin-top: var(--s-6); align-items: center; }
+.dream {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: var(--t-quote);
+  font-variation-settings: "opsz" 96;
+  line-height: 1.12;
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+.dream em { color: var(--gold); }
+.js .dream[data-dream] .dw { color: var(--ink-3); transition: color 400ms var(--ease); }
+.js .dream[data-dream] .dw.is-lit { color: var(--ink); }
+.js .dream[data-dream] em .dw.is-lit { color: var(--gold); }
+
+/* Nobel: ano gigante */
+.bigyear {
+  margin: var(--s-3) 0 0;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: clamp(5rem, 3rem + 7vw, 10rem);
+  font-variation-settings: "opsz" 96;
+  line-height: .9;
+  letter-spacing: -.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--gold);
+  text-align: right;
+}
+
+/* Selma: rota que se desenha */
+.moment__split-head {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
+}
+.route { position: relative; margin-block: var(--s-6); padding-block: 40px; }
+.route__svg { display: block; width: 100%; height: clamp(120px, 16vw, 200px); overflow: visible; }
+.route__base { fill: none; stroke: var(--line-strong); stroke-width: 1.5; stroke-dasharray: 4 6; vector-effect: non-scaling-stroke; }
+.route__draw { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: var(--route, 0); vector-effect: non-scaling-stroke; }
+.js .route__draw { stroke-dashoffset: calc(1 - var(--route, 0)); }
+.route__city { position: absolute; margin: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.route__city b { font-family: var(--f-display); font-size: 1.4rem; font-weight: 500; }
+.route__city--a { left: 0; bottom: 0; }
+.route__city--b { right: 0; top: 0; text-align: right; }
+.route__km {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: var(--f-display);
+  font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4rem);
+  color: var(--gold);
+  line-height: 1;
+}
+.moment__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+
+/* Últimos anos: página de jornal */
+.press {
+  display: grid;
+  grid-template-columns: 5fr 3fr 4fr;
+  gap: 0;
+  border-top: 3px double var(--line-strong);
+}
+.press__item {
+  padding: var(--s-4) var(--s-4) var(--s-4) 0;
+  border-right: 1px solid var(--line);
+}
+.press__item + .press__item { padding-left: var(--s-4); }
+.press__item p { color: var(--ink-2); }
+.press__item--lead { grid-row: span 2; }
+.press__kicker { margin-bottom: var(--s-2); }
+.press__head {
+  font-family: var(--f-display);
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--ink) !important;
+  margin-bottom: var(--s-2);
+}
+.press__item--lead .press__head { font-size: clamp(2rem, 1.3rem + 2vw, 3rem); }
+.press__photo { grid-column: 2 / 4; padding: var(--s-4) 0 0 var(--s-4); border-top: 1px solid var(--line); }
+.press__cap { margin-top: 12px; font-size: var(--t-small); color: var(--ink-2); max-width: 60ch; }
+.press__cap .credit { display: block; }
+.press__item:nth-child(3) { border-right: 0; }
+
+/* Memphis: bloco escuro */
+.moment--dark {
+  margin-inline: calc(50% - 50vw);
+  padding-inline: calc(50vw - 50%);
+  background: #0e0b08;
+  color: #efe7da;
+  --ink: #efe7da;
+  --ink-2: #bcb09d;
+  --ink-3: #8d8170;
+  --line: rgba(239, 231, 218, .14);
+  --line-strong: rgba(239, 231, 218, .28);
+  --gold: #d9a441;
+  --brick: #d0694c;
+  --shade: 14, 11, 8;
+  --bg-3: #28211a;
+}
+.moment--dark strong { color: var(--ink); }
+.clocktime {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(5rem, 3rem + 9vw, 12rem);
+  font-variation-settings: "opsz" 96;
+  line-height: .85;
+  letter-spacing: -.04em;
+  color: var(--brick);
+}
+.moment__wide { margin-top: var(--s-6); }
+
+@media (max-width: 900px) {
+  .moment--split, .moment__cols, .moment__split-head { grid-template-columns: minmax(0, 1fr); }
+  .moment--flip .moment__text, .moment--flip .moment__media { order: 0; }
+  .moment__media { position: static; }
+  .bigyear { text-align: left; }
+  .press { grid-template-columns: 1fr; }
+  .press__item, .press__item + .press__item { padding: var(--s-4) 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  .press__photo { grid-column: auto; padding: var(--s-4) 0 0; border-top: 0; }
+  .moment__over { margin-top: -180px; }
+  .moment__bleed { height: 70vh; }
+  .route__city b { font-size: 1.1rem; }
+}
+@media (max-width: 560px) {
+  .moment__pair { grid-template-columns: 1fr; }
+  .moment__inset { width: 70%; }
+  .facts { grid-template-columns: 1fr 1fr; }
+}
+
 /* <!-- CSS-SECOES --> */
