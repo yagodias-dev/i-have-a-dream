@@ -112,7 +112,10 @@
 
   /* ---------- Entrada do hero ---------- */
   (function heroEnter() {
-    var go = function () { doc.classList.add('is-ready'); };
+    var go = function () {
+      doc.classList.add('is-ready');
+      setTimeout(function () { doc.classList.add('hero-done'); }, reduced() ? 0 : 2200);
+    };
     if (reduced()) { go(); return; }
     var done = false;
     var once = function () { if (!done) { done = true; requestAnimationFrame(go); } };
@@ -594,5 +597,5 @@
     render(false);
   })();
 
-  /* <!-- JS-SECOES --> */
+
 })();
