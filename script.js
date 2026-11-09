@@ -490,5 +490,109 @@
     els.forEach(function (el) { io.observe(el); });
   })();
 
+  /* ---------- Quiz ---------- */
+  (function quiz() {
+    var box = $('[data-quiz]');
+    if (!box) return;
+    var stage = $('.quiz__stage', box);
+    var live = $('.quiz__live', box);
+    var nEl = $('.quiz__n');
+    var scoreEl = $('.quiz__score');
+    var bar = $('.quiz__bar-fill');
+    var Q = [
+      { q: 'Em que cidade Martin Luther King Jr. nasceu?',
+        o: ['Montgomery, Alabama', 'Atlanta, Geórgia', 'Memphis, Tennessee', 'Birmingham, Alabama'], a: 1,
+        e: 'Ele nasceu em 15 de janeiro de 1929, na casa da Auburn Avenue, em Atlanta.' },
+      { q: 'Quanto tempo durou o boicote aos ônibus de Montgomery?',
+        o: ['38 dias', 'Três meses', '381 dias', 'Cinco anos'], a: 2,
+        e: 'De 5 de dezembro de 1955 a 21 de dezembro de 1956: 381 dias.' },
+      { q: 'Onde King escreveu, em abril de 1963, a carta que defende a desobediência pacífica a leis injustas?',
+        o: ['Na prisão de Birmingham', 'Na Casa Branca', 'Em Oslo, na Noruega', 'Durante a viagem à Índia'], a: 0,
+        e: 'A “Carta da Prisão de Birmingham” é datada de 16 de abril de 1963, quatro dias depois de sua prisão.' },
+      { q: 'Na Marcha sobre Washington, quem pediu a King que falasse do sonho?',
+        o: ['Rosa Parks', 'Coretta Scott King', 'Mahalia Jackson', 'Bayard Rustin'], a: 2,
+        e: 'A cantora gospel Mahalia Jackson pediu, e King improvisou a parte mais lembrada do discurso.' },
+      { q: 'Com quantos anos King recebeu o Nobel da Paz?',
+        o: ['29 anos', '35 anos', '39 anos', '45 anos'], a: 1,
+        e: 'Ele recebeu o prêmio em Oslo em 10 de dezembro de 1964, aos 35 anos, e doou o valor ao movimento.' },
+      { q: 'Qual lei, assinada em 6 de agosto de 1965, derrubou os testes de alfabetização para votar?',
+        o: ['Lei dos Direitos Civis', 'Lei da Moradia Justa', 'Lei do Direito ao Voto', 'Décima Quarta Emenda'], a: 2,
+        e: 'A Lei do Direito ao Voto foi aprovada meses depois das marchas de Selma.' }
+    ];
+    var i = 0, score = 0;
+    var letters = ['A', 'B', 'C', 'D'];
+
+    function meter() {
+      if (nEl) nEl.textContent = Math.min(i + 1, Q.length);
+      if (scoreEl) scoreEl.textContent = score;
+      if (bar) bar.style.setProperty('--p', (i / Q.length).toFixed(3));
+    }
+
+    function render(focus) {
+      var item = Q[i];
+      var html = '<div class="q">' +
+        '<p class="q__num label">Pergunta ' + (i + 1) + ' de ' + Q.length + '</p>' +
+        '<h3 class="q__title" tabindex="-1">' + item.q + '</h3>' +
+        '<ul class="q__opts">';
+      item.o.forEach(function (opt, k) {
+        html += '<li><button type="button" class="q__opt" data-k="' + k + '">' +
+          '<span class="q__letter" aria-hidden="true">' + letters[k] + '</span>' +
+          '<span class="q__txt">' + opt + '</span><span class="q__mark"></span></button></li>';
+      });
+      html += '</ul><div class="q__after"></div></div>';
+      stage.innerHTML = html;
+      meter();
+      if (focus) $('.q__title', stage).focus();
+    }
+
+    function answer(k) {
+      var item = Q[i];
+      var ok = k === item.a;
+      if (ok) score++;
+      $$('.q__opt', stage).forEach(function (b, j) {
+        b.disabled = true;
+        if (j === item.a) { b.classList.add('is-right'); $('.q__mark', b).textContent = 'Correta'; }
+        if (j === k) b.classList.add('is-picked');
+        if (j === k && !ok) { b.classList.add('is-wrong'); $('.q__mark', b).textContent = 'Sua resposta'; }
+      });
+      var last = i === Q.length - 1;
+      var after = $('.q__after', stage);
+      after.innerHTML = '<div class="q__feedback ' + (ok ? 'is-right' : 'is-wrong') + '">' +
+        '<p class="q__verdict">' + (ok ? 'Acertou.' : 'Não foi dessa vez.') + '</p>' +
+        '<p class="q__explain">' + (ok ? '' : 'A resposta certa é “' + item.o[item.a] + '”. ') + item.e + '</p>' +
+        '<button type="button" class="btn btn--primary q__next">' + (last ? 'Ver o resultado' : 'Ir para a próxima pergunta') + '</button></div>';
+      live.textContent = (ok ? 'Acertou. ' : 'Errou. A resposta certa é ' + item.o[item.a] + '. ') + item.e;
+      if (scoreEl) scoreEl.textContent = score;
+      if (bar) bar.style.setProperty('--p', ((i + 1) / Q.length).toFixed(3));
+      $('.q__next', after).focus({ preventScroll: true });
+    }
+
+    function result() {
+      var msg = score === 6 ? ['Gabaritou.', 'Você acertou todas. A linha do tempo e os momentos não guardam segredos para você.']
+        : score >= 4 ? ['Muito bem.', 'Você conhece os marcos principais. Vale rever na linha do tempo as perguntas que escaparam.']
+        : ['Bom começo.', 'Releia a linha do tempo e os momentos e tente de novo: todas as respostas estão nesta página.'];
+      stage.innerHTML = '<div class="result">' +
+        '<p class="q__num label">Resultado</p>' +
+        '<p class="result__score">' + score + '<small> de ' + Q.length + '</small></p>' +
+        '<h3 class="result__title" tabindex="-1">' + msg[0] + '</h3>' +
+        '<p class="result__text">' + msg[1] + '</p>' +
+        '<button type="button" class="btn btn--ghost q__restart">Refazer o quiz</button></div>';
+      live.textContent = 'Resultado: ' + score + ' de ' + Q.length + ' acertos. ' + msg[0];
+      if (nEl) nEl.textContent = Q.length;
+      $('.result__title', stage).focus();
+    }
+
+    stage.addEventListener('click', function (e) {
+      var opt = e.target.closest('.q__opt');
+      if (opt && !opt.disabled) { answer(parseInt(opt.getAttribute('data-k'), 10)); return; }
+      if (e.target.closest('.q__next')) {
+        if (i === Q.length - 1) { result(); return; }
+        i++; render(true); return;
+      }
+      if (e.target.closest('.q__restart')) { i = 0; score = 0; render(true); }
+    });
+    render(false);
+  })();
+
   /* <!-- JS-SECOES --> */
 })();
