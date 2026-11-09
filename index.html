@@ -1,1154 +1,124 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="escuro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Martin Luther King Jr. — O Sonho que Mudou a História</title>
-<meta name="description" content="Biografia completa de Martin Luther King Jr. (1929–1968): infância em Atlanta, Montgomery, Birmingham, a Marcha sobre Washington, o Nobel da Paz, Selma, Memphis e o legado do líder dos direitos civis.">
-<meta name="theme-color" content="#0b0a08">
-<meta property="og:title" content="Martin Luther King Jr. — O Sonho que Mudou a História">
-<meta property="og:description" content="Uma biografia ilustrada e interativa do líder do movimento pelos direitos civis.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Martin Luther King Jr. (1929–1968) — biografia ilustrada</title>
+<meta name="description" content="Biografia ilustrada de Martin Luther King Jr. (1929–1968): Atlanta, Montgomery, Birmingham, a Marcha sobre Washington, o Nobel da Paz, Selma, Memphis e o legado das leis de 1964 e 1965.">
+<meta name="theme-color" content="#15110d">
+<meta property="og:title" content="Martin Luther King Jr. (1929–1968) — biografia ilustrada">
+<meta property="og:description" content="Linha do tempo, momentos decisivos, citações com fonte, galeria de arquivo e um quiz sobre o líder dos direitos civis.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0a08'/%3E%3Ctext x='32' y='42' font-family='Georgia,serif' font-size='26' text-anchor='middle' fill='%23d8b45f'%3EMLK%3C/text%3E%3C/svg%3E">
+<meta property="og:locale" content="pt_BR">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2315110d'/%3E%3Ctext x='32' y='44' font-family='Didot,Georgia,serif' font-size='30' font-style='italic' text-anchor='middle' fill='%23d9a441'%3EK%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://upload.wikimedia.org" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500;1,700&family=Source+Sans+3:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..800&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400..700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script>
-  /* Executa antes de tudo: marca JS ativo e prepara o fallback das imagens */
+  /* Roda antes de tudo: tema salvo, JS ativo e plano B das imagens.
+     Ordem de cada foto: assets/<arquivo>  ->  Wikimedia Commons (mesmo arquivo)  ->  espaço reservado.
+     Para usar só os arquivos locais, troque USAR_COMMONS para false. */
   (function () {
     var d = document.documentElement;
+    var USAR_COMMONS = true;
     d.classList.add('js');
     try {
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var saved = localStorage.getItem('mlk-motion');
-      if (saved === 'reduce') reduce = true;
-      if (saved === 'full') reduce = false;
-      d.classList.add(reduce ? 'reduce-motion' : 'anim');
-      if (!reduce && !sessionStorage.getItem('mlk-intro')) d.classList.add('intro-pending');
-    } catch (e) { d.classList.add('anim'); }
+      var t = localStorage.getItem('mlk-tema');
+      if (t === 'claro' || t === 'escuro') d.setAttribute('data-theme', t);
+    } catch (e) {}
     document.addEventListener('error', function (ev) {
       var img = ev.target;
       if (!img || img.tagName !== 'IMG') return;
-      var orig = img.getAttribute('data-orig');
-      var fp = img.getAttribute('data-fp');
-      if (orig && img.src !== orig && !img.dataset.triedOrig) {
-        img.dataset.triedOrig = '1';
-        img.src = orig;
+      var arq = img.getAttribute('data-commons');
+      if (arq && USAR_COMMONS && !img.getAttribute('data-remoto')) {
+        img.setAttribute('data-remoto', '1');
+        img.classList.add('is-carregando');
+        img.src = 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(arq) + '?width=' + (img.getAttribute('data-w') || '1280');
         return;
       }
-      if (fp && !img.dataset.triedFp) {
-        img.dataset.triedFp = '1';
-        img.src = fp;
-        return;
-      }
-      /* imagens reserva: outros arquivos do Wikimedia Commons, tentados em ordem */
-      var alts = (img.getAttribute('data-alts') || '').split('|').filter(Boolean);
-      var n = parseInt(img.dataset.altI || '0', 10);
-      if (n < alts.length) {
-        img.dataset.altI = String(n + 1);
-        var w = (/width=(\d+)/.exec(fp || '') || [0, '960'])[1];
-        img.src = 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(alts[n]) + '?width=' + w;
-        var credit = img.closest('.photo') && img.closest('.photo').querySelector('.photo__credit');
-        if (credit) {
-          credit.href = 'https://commons.wikimedia.org/wiki/File:' + alts[n];
-          credit.textContent = 'Foto: Wikimedia Commons · autor e licença na página do arquivo';
-        }
-        return;
-      }
-      img.classList.add('is-failed');
-      var box = img.closest('.photo, .media-bg, .gallery__item, .tl-thumb, .lightbox__stage');
-      if (box) box.classList.add('is-failed');
+      img.classList.add('is-falhou');
+      var box = img.closest('.photo');
+      if (box) box.classList.add('is-vazia');
+    }, true);
+    document.addEventListener('load', function (ev) {
+      var img = ev.target;
+      if (img && img.tagName === 'IMG') img.classList.remove('is-carregando');
     }, true);
   })();
 </script>
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<div class="grain" aria-hidden="true"></div>
 
-<!-- ============ ABERTURA CINEMATOGRÁFICA ============ -->
-<div class="intro" id="intro" aria-hidden="true">
-  <div class="intro__grain"></div>
-  <div class="intro__vignette"></div>
-  <div class="intro__stage">
-    <p class="intro__line" data-intro="1">Washington, 28 de agosto de 1963.</p>
-    <p class="intro__line" data-intro="2">Diante de 250 mil pessoas,</p>
-    <p class="intro__line" data-intro="3">um pastor de 34 anos deixou o texto de lado e disse:</p>
-    <p class="intro__dream" data-intro="4"><span class="intro__dream-text">I have a dream</span></p>
-    <p class="intro__line intro__line--pt" data-intro="5">“Eu tenho um sonho.”</p>
-  </div>
-  <div class="intro__curtain intro__curtain--l"></div>
-  <div class="intro__curtain intro__curtain--r"></div>
-  <button class="intro__skip" type="button">Pular abertura <span aria-hidden="true">→</span></button>
-</div>
-
-<canvas class="particles" id="particles" aria-hidden="true"></canvas>
-<div class="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"><span class="cursor__label"></span></span></div>
-<div class="film-grain" aria-hidden="true"></div>
-
-<!-- Barra de progresso de leitura -->
-<div class="progress" aria-hidden="true">
-  <div class="progress__bar"><span class="progress__flame"></span></div>
-</div>
-
-<!-- ============ CABEÇALHO ============ -->
+<!-- ============ 1. MENU FIXO ============ -->
 <header class="site-header" id="topo">
-  <a class="brand" href="#inicio" aria-label="Martin Luther King Jr., voltar ao início" data-magnetic>
-    <span class="brand__mark">MLK</span>
-    <span class="brand__text"><strong>Martin Luther King Jr.</strong><small>1929 — 1968</small></span>
-  </a>
-  <p class="site-header__chapter" aria-live="polite"><span class="chapter-indicator__num">00</span><span class="chapter-indicator__name">Abertura</span></p>
-  <div class="site-header__actions">
-    <button class="motion-toggle" type="button" aria-pressed="false" title="Reduzir animações">
-      <span class="motion-toggle__icon" aria-hidden="true"></span><span class="motion-toggle__text">Movimento</span>
-    </button>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-magnetic>
-      <span class="menu-btn__label">Capítulos</span>
-      <span class="menu-btn__icon" aria-hidden="true"><i></i><i></i></span>
-    </button>
+  <div class="site-header__inner">
+    <a class="brand" href="#inicio">
+      <span class="brand__mark" aria-hidden="true">K</span>
+      <span class="brand__text"><span class="brand__name">Martin Luther King Jr.</span><span class="brand__years">1929–1968</span></span>
+    </a>
+    <nav class="nav" id="menu" aria-label="Seções do site">
+      <ol class="nav__list">
+        <li><a href="#linha-do-tempo"><span class="nav__num" aria-hidden="true">01</span>Linha do tempo</a></li>
+        <li><a href="#momentos"><span class="nav__num" aria-hidden="true">02</span>Momentos</a></li>
+        <li><a href="#citacoes"><span class="nav__num" aria-hidden="true">03</span>Citações</a></li>
+        <li><a href="#galeria"><span class="nav__num" aria-hidden="true">04</span>Galeria</a></li>
+        <li><a href="#legado"><span class="nav__num" aria-hidden="true">05</span>Legado</a></li>
+        <li><a href="#quiz"><span class="nav__num" aria-hidden="true">06</span>Quiz</a></li>
+      </ol>
+    </nav>
+    <div class="site-header__actions">
+      <button class="theme-btn" type="button" aria-pressed="false" aria-label="Ativar tema claro">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+        <span class="theme-btn__label">Tema</span>
+      </button>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
+        <span class="menu-btn__label">Menu</span>
+        <span class="menu-btn__bars" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
   </div>
 </header>
 
-<nav class="menu" id="menu" aria-label="Capítulos" hidden>
-  <div class="menu__bg" aria-hidden="true"></div>
-  <ol class="menu__list">
-    <li><a href="#inicio"><span>00</span>Abertura</a></li>
-    <li><a href="#origens"><span>01</span>Infância em Atlanta</a></li>
-    <li><a href="#formacao"><span>02</span>Formação</a></li>
-    <li><a href="#familia"><span>03</span>Coretta e o púlpito</a></li>
-    <li><a href="#montgomery"><span>04</span>Montgomery</a></li>
-    <li><a href="#nao-violencia"><span>05</span>SCLC e a não violência</a></li>
-    <li><a href="#birmingham"><span>06</span>Birmingham</a></li>
-    <li><a href="#washington"><span>07</span>Marcha sobre Washington</a></li>
-    <li><a href="#nobel"><span>08</span>Nobel da Paz</a></li>
-    <li><a href="#selma"><span>09</span>Selma e as leis</a></li>
-    <li><a href="#ultimos-anos"><span>10</span>Últimos anos</a></li>
-    <li><a href="#memphis"><span>11</span>Memphis, 1968</a></li>
-    <li><a href="#legado"><span>12</span>Legado</a></li>
-    <li><a href="#linha-do-tempo"><span>13</span>Linha do tempo</a></li>
-    <li><a href="#citacoes"><span>14</span>Citações</a></li>
-    <li><a href="#curiosidades"><span>15</span>Curiosidades</a></li>
-    <li><a href="#galeria"><span>16</span>Galeria</a></li>
-  </ol>
-  <p class="menu__foot">“Injustice anywhere is a threat to justice everywhere.” — 1963</p>
-</nav>
+<main id="conteudo" tabindex="-1">
 
-<nav class="rail" aria-label="Navegação rápida entre capítulos"></nav>
+<!-- ============ 2. HERO ============ -->
+<section class="hero" id="inicio" aria-labelledby="hero-titulo">
+  <figure class="hero__photo photo" style="--ratio: 1296 / 1403" data-fonte="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_-_March_on_Washington.jpg">
+    <!-- TROCAR POR IMAGEM: Martin_Luther_King_-_March_on_Washington.jpg -->
+    <img src="assets/Martin_Luther_King_-_March_on_Washington.jpg" data-commons="Martin_Luther_King_-_March_on_Washington.jpg" data-w="1600" width="1296" height="1403" alt="Martin Luther King Jr. discursa ao microfone na Marcha sobre Washington, em 28 de agosto de 1963" fetchpriority="high" decoding="async">
+    <span class="photo__ph" aria-hidden="true"><span class="photo__ph-label">Imagem reservada</span><span class="photo__ph-file">Martin_Luther_King_-_March_on_Washington.jpg</span></span>
+  </figure>
+  <div class="hero__shade" aria-hidden="true"></div>
 
-<main id="conteudo">
-
-<section class="hero" id="inicio" data-chapter="00" data-name="Abertura">
-  <div class="hero__layers" aria-hidden="true">
-    <div class="hero__layer hero__layer--bg" data-depth="0.35"><img class="hero__crowd" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/March_on_washington_Aug_28_1963.jpg/1920px-March_on_washington_Aug_28_1963.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/7f/March_on_washington_Aug_28_1963.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/March_on_washington_Aug_28_1963.jpg?width=1280" data-alts="1963_march_on_washington.jpg|Civil_rights_march_on_Washington,_D.C..jpg" alt="" fetchpriority="high" decoding="async"></div>
-    <div class="hero__layer hero__layer--rays" data-depth="0.15"><span></span><span></span><span></span><span></span></div>
-    <div class="hero__layer hero__layer--portrait" data-depth="0.08"><img class="hero__portrait" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Martin_Luther_King,_Jr..jpg/1280px-Martin_Luther_King,_Jr..jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/0/05/Martin_Luther_King,_Jr..jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King,_Jr..jpg?width=1280" data-alts="Martin_Luther_King_(cropped).jpg|Martin_Luther_King_Jr_NYWTS.jpg" alt="" fetchpriority="high" decoding="async"></div>
-    <div class="hero__layer hero__layer--dust" data-depth="-0.12"></div>
-  </div>
-  <div class="hero__content">
-    <p class="hero__kicker"><span>Atlanta</span><i></i><span>Memphis</span></p>
-    <h1 class="hero__title">
-      <span class="hero__name" data-anim="hero">Martin Luther</span>
-      <span class="hero__name hero__name--big" data-anim="hero">King Jr.</span>
+  <div class="hero__content wrap">
+    <p class="hero__kicker label" data-enter="1">Biografia ilustrada · Atlanta → Memphis</p>
+    <h1 class="hero__title" id="hero-titulo">
+      <span class="line"><span class="line__in" data-enter="2">Martin</span></span>
+      <span class="line"><span class="line__in" data-enter="3">Luther</span></span>
+      <span class="line"><span class="line__in hero__title-em" data-enter="4">King Jr.</span></span>
     </h1>
-    <p class="hero__dates"><span data-count="1929" data-from="1900" data-plain>1929</span><span class="hero__dash" aria-hidden="true"></span><span data-count="1968" data-from="1900" data-plain>1968</span></p>
-    <blockquote class="hero__quote">
-      <p lang="en" class="hero__quote-en">“The arc of the moral universe is long, but it bends toward justice.”</p>
-      <p class="hero__quote-pt">“O arco do universo moral é longo, mas se curva em direção à justiça.” <cite>— Montgomery, Alabama, 25 de março de 1965</cite></p>
-    </blockquote>
-    <div class="hero__cta">
-      <a class="btn btn--gold" href="#origens" data-magnetic><span>Começar a história</span><i aria-hidden="true">↓</i></a>
-      <a class="btn btn--ghost" href="#linha-do-tempo" data-magnetic><span>Ver a linha do tempo</span></a>
+    <p class="hero__lede" data-enter="5">O pastor batista que enfrentou a segregação sem revidar um golpe — e ajudou a mudar as leis dos Estados Unidos em menos de 13 anos.</p>
+    <p class="hero__years" data-enter="6" aria-label="De 1929 a 1968">
+      <span>1929</span><span class="hero__years-line" aria-hidden="true"></span><span>1968</span>
+    </p>
+    <div class="hero__actions" data-enter="7">
+      <a class="btn btn--primary" href="#linha-do-tempo">Ver a linha do tempo</a>
+      <a class="btn btn--ghost" href="#citacoes">Ler as citações</a>
     </div>
   </div>
-  <a class="hero__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King,_Jr..jpg" target="_blank" rel="noopener">Retrato: Dick DeMarsico, 1964 · Multidão: Marcha sobre Washington, 1963 — Arquivos públicos via Wikimedia Commons</a>
-  <div class="hero__scroll" aria-hidden="true"><span>Role</span><i></i></div>
+
+  <a class="scroll-cue" href="#linha-do-tempo" aria-label="Rolar até a linha do tempo">
+    <span class="scroll-cue__text label" aria-hidden="true">Rolar</span>
+    <span class="scroll-cue__track" aria-hidden="true"><span class="scroll-cue__dot"></span></span>
+  </a>
 </section>
 
-<section class="chapter chapter--origens" id="origens" data-chapter="01" data-name="Infância em Atlanta" data-scene="iris">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">01</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Atlanta, Geórgia · 1929–1944</p>
-  <h2 class="chapter-title" data-anim="rise">Um menino do bairro <em>Sweet Auburn</em></h2>
-  <p class="lead">Ele nasceu numa casa cheia de livros, sermões e música — e, do lado de fora, num país que o separava por causa da cor da pele.</p>
-</header>
-    <div class="split">
-      <div class="prose">
-        <p class="dropcap">Martin Luther King Jr. nasceu em <strong>15 de janeiro de 1929</strong>, no andar de cima da casa de número 501 da Auburn Avenue, em Atlanta, no estado da Geórgia. A rua era o coração do “Sweet Auburn”, bairro que concentrava igrejas, bancos, jornais e comércios de proprietários negros — uma ilha de prosperidade cercada pela segregação.</p>
-        <p>Foi registrado como <strong>Michael King</strong>, o mesmo nome do pai. Em 1934, depois de uma viagem à Alemanha, o pai passou a usar o nome <em>Martin Luther</em>, em homenagem ao reformador protestante, e estendeu a mudança ao filho.</p>
-        <p>O pai, Martin Luther King Sr. — o “Daddy King” —, era pastor da <strong>Igreja Batista Ebenezer</strong>, a mesma que tinha sido liderada pelo avô materno, Adam Daniel Williams. A mãe, <strong>Alberta Williams King</strong>, era professora e organista da igreja. Martin era o filho do meio: a irmã mais velha se chamava Christine, e o caçula, Alfred Daniel, o “A.D.”.</p>
-        <h3 class="sub">Crescer sob Jim Crow</h3>
-        <p>O Sul dos Estados Unidos vivia sob as leis de <strong>Jim Crow</strong>: escolas, ônibus, bebedouros, restaurantes e até cemitérios eram separados por raça. Votar era quase impossível para a maioria dos negros, barrados por taxas e testes arbitrários.</p>
-        <p>King contou mais tarde que, ainda criança, perdeu um amigo branco de brincadeiras: ao entrarem na escola, os pais do menino disseram que os dois não podiam mais brincar juntos. Na adolescência, voltando de um concurso de oratória, foi obrigado com sua professora a ceder o assento do ônibus a passageiros brancos e viajar horas em pé — uma humilhação que ele descreveu como a raiva mais intensa que já tinha sentido.</p>
-      </div>
-      <div class="stack scene-media">
-        <figure class="photo photo--tall" data-reveal="color" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Martin_Luther_King_Jr._birth_home.jpg/960px-Martin_Luther_King_Jr._birth_home.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/41/Martin_Luther_King_Jr._birth_home.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_Jr._birth_home.jpg?width=960" data-alts="Martin_Luther_King_Jr._National_Historic_Site_August_2016_17_(King_Birth_Home).jpg|Martin_Luther_King&#x27;s_Boyhood_Home.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Martin_Luther_King_Jr._birth_home.jpg/1920px-Martin_Luther_King_Jr._birth_home.jpg" alt="A casa onde Martin Luther King Jr. nasceu, na Auburn Avenue, em Atlanta" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">A casa natal, no 501 da Auburn Avenue, hoje parte do Parque Histórico Nacional Martin Luther King Jr.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_Jr._birth_home.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença livre na página do arquivo</a></figcaption>
-</figure>
-        <figure class="photo photo--small photo--offset" data-reveal="color" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg/960px-Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/1/1a/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg?width=960" data-alts="Ebenezer_Baptist_Church,_Atlanta,_Georgia,_United_States.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg/1920px-Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg" alt="Fachada da Igreja Batista Ebenezer, em Atlanta" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">A Igreja Batista Ebenezer, onde o pai e o avô pregaram — e onde o próprio King seria copastor a partir de 1960.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença livre na página do arquivo</a></figcaption>
-</figure>
-      </div>
-    </div>
-    <aside class="jimcrow" aria-label="Exemplos de segregação">
-      <p class="jimcrow__title">O que a lei separava</p>
-      <ul class="jimcrow__list">
-        <li><span>Escolas</span></li><li><span>Ônibus</span></li><li><span>Bebedouros</span></li><li><span>Restaurantes</span></li><li><span>Cinemas</span></li><li><span>Hospitais</span></li><li><span>Urnas</span></li>
-      </ul>
-    </aside>
-  </div>
-</section>
-
-<section class="chapter chapter--formacao paper" id="formacao" data-chapter="02" data-name="Formação" data-scene="blinds">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">02</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>1944–1955 · Atlanta, Chester e Boston</p>
-  <h2 class="chapter-title" data-anim="type">Da sala de aula ao <em>púlpito</em></h2>
-  <p class="lead">Três escolas, onze anos de estudo e um encontro decisivo com as ideias de Mahatma Gandhi.</p>
-</header>
-    <ol class="diplomas">
-      <li class="diploma" data-tilt>
-        <span class="diploma__year">1944 → 1948</span>
-        <h3>Morehouse College</h3>
-        <p class="diploma__where">Atlanta, Geórgia</p>
-        <p>Depois de pular duas séries no colégio, entrou na faculdade com apenas <strong>15 anos</strong>. Ali conviveu com o presidente da instituição, Benjamin Mays, pregador e intelectual que se tornaria um mentor. Formou-se bacharel em <strong>Sociologia</strong> em 1948 — ano em que também foi ordenado pastor batista, aos 19.</p>
-      </li>
-      <li class="diploma" data-tilt>
-        <span class="diploma__year">1948 → 1951</span>
-        <h3>Crozer Theological Seminary</h3>
-        <p class="diploma__where">Chester, Pensilvânia</p>
-        <p>Num seminário de maioria branca, foi eleito presidente do corpo estudantil e se formou como o primeiro da turma, com o título de <strong>Bacharel em Divindade</strong>. Leu Walter Rauschenbusch e Reinhold Niebuhr e, numa palestra do educador Mordecai Johnson, conheceu de perto a filosofia de <strong>Gandhi</strong>.</p>
-      </li>
-      <li class="diploma" data-tilt>
-        <span class="diploma__year">1951 → 1955</span>
-        <h3>Universidade de Boston</h3>
-        <p class="diploma__where">Boston, Massachusetts</p>
-        <p>Fez doutorado em <strong>Teologia Sistemática</strong>, com uma tese que comparava as ideias de Deus dos teólogos Paul Tillich e Henry Nelson Wieman. Recebeu o título em <strong>5 de junho de 1955</strong>. Décadas depois, uma comissão da universidade concluiu que partes da tese não citavam corretamente suas fontes, mas decidiu não revogar o título.</p>
-      </li>
-    </ol>
-    <div class="formacao__aside">
-      <figure class="photo photo--portrait" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Martin_Luther_King_Jr_NYWTS.jpg/1280px-Martin_Luther_King_Jr_NYWTS.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/8/84/Martin_Luther_King_Jr_NYWTS.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_Jr_NYWTS.jpg?width=1280" data-alts="Martin_Luther_King_Jr_NYWTS_2.jpg|Martin_Luther_King_Jr_NYWTS_5.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Martin_Luther_King_Jr_NYWTS.jpg/1920px-Martin_Luther_King_Jr_NYWTS.jpg" alt="Retrato de Martin Luther King Jr. de terno e gravata" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Dos bancos de Morehouse aos debates de Boston, King construiu a base intelectual que sustentaria o movimento.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_Jr_NYWTS.jpg" target="_blank" rel="noopener">Foto: New York World-Telegram &amp; Sun · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-      <p class="margin-note"><span>Nota de rodapé</span>No seminário, King descobriu que a não violência de Gandhi podia ser mais do que uma ética pessoal: podia ser um método de transformação social.</p>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--familia" id="familia" data-chapter="03" data-name="Coretta e o púlpito" data-scene="curtain">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">03</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>1952–1954 · Boston, Marion e Montgomery</p>
-  <h2 class="chapter-title" data-anim="blur">Coretta, e uma <em>igreja</em> em Montgomery</h2>
-  <p class="lead">Um casamento que se tornaria também uma parceria política.</p>
-</header>
-    <div class="split split--reverse">
-      <div class="scene-media duo">
-        <figure class="photo photo--tall" data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coretta_Scott_King_1964.jpg/960px-Coretta_Scott_King_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/74/Coretta_Scott_King_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_1964.jpg?width=960" data-alts="Coretta_Scott_King_1964_(1).jpg|Coretta_Scott_King.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coretta_Scott_King_1964.jpg/1920px-Coretta_Scott_King_1964.jpg" alt="Retrato de Coretta Scott King em 1964" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Coretta Scott King, em 1964. Cantora formada no New England Conservatory, ela seria uma ativista de destaque por toda a vida.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Coretta_Scott_King_1964.jpg" target="_blank" rel="noopener">Foto: New York World-Telegram &amp; Sun · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-        <figure class="photo photo--small photo--float" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg/960px-Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg?width=960" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg/1920px-Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" alt="Coretta Scott King e Martin Luther King Jr. ao lado do prefeito de Nova York Robert F. Wagner" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">O casal em Nova York, ao lado do prefeito Robert F. Wagner.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" target="_blank" rel="noopener">Foto: New York World-Telegram &amp; Sun · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-      </div>
-      <div class="prose">
-        <p class="dropcap">Em 1952, em Boston, um amigo apresentou King a <strong>Coretta Scott</strong>, estudante de canto no New England Conservatory of Music. Nascida perto de Marion, no Alabama, e formada no Antioch College, ela já tinha consciência política própria e não pretendia abandonar a música.</p>
-        <p>Casaram-se em <strong>18 de junho de 1953</strong>, no jardim da casa dos pais dela, em Marion. Quem celebrou a cerimônia foi o pai do noivo.</p>
-        <p>Em 1954, aos 25 anos e ainda terminando o doutorado, King aceitou o convite para ser pastor da <strong>Igreja Batista da Avenida Dexter</strong>, em Montgomery, a capital do Alabama — a poucos quarteirões do Capitólio estadual onde, quase um século antes, os Estados Confederados haviam sido proclamados.</p>
-        <div class="family">
-          <p class="family__title">Os quatro filhos</p>
-          <ul class="family__list">
-            <li><b>Yolanda</b><span>1955</span></li>
-            <li><b>Martin Luther III</b><span>1957</span></li>
-            <li><b>Dexter Scott</b><span>1961</span></li>
-            <li><b>Bernice Albertine</b><span>1963</span></li>
-          </ul>
-        </div>
-        <figure class="photo photo--wide photo--inline" data-reveal="color" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Dexter_Avenue_Baptist_Church.jpg/960px-Dexter_Avenue_Baptist_Church.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/b/b0/Dexter_Avenue_Baptist_Church.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Dexter_Avenue_Baptist_Church.jpg?width=960" data-alts="Dexter_Avenue_Baptist.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Dexter_Avenue_Baptist_Church.jpg/1920px-Dexter_Avenue_Baptist_Church.jpg" alt="A Igreja Batista da Avenida Dexter, em Montgomery" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">A Igreja Batista da Avenida Dexter, em Montgomery: onde King foi pastor de 1954 a 1960.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Dexter_Avenue_Baptist_Church.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença livre na página do arquivo</a></figcaption>
-</figure>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--montgomery" id="montgomery" data-chapter="04" data-name="Montgomery" data-scene="wipe">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">04</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Montgomery, Alabama · 1955–1956</p>
-  <h2 class="chapter-title" data-anim="stamp">381 dias <em>a pé</em></h2>
-  <p class="lead">Uma costureira se recusou a levantar. Uma cidade inteira decidiu caminhar.</p>
-</header>
-    <div class="split">
-      <div class="prose">
-        <p class="dropcap">Na tarde de <strong>1º de dezembro de 1955</strong>, <strong>Rosa Parks</strong> — costureira e secretária da seção local da NAACP, a principal organização de direitos civis do país — foi presa por se recusar a ceder seu assento a um passageiro branco num ônibus de Montgomery.</p>
-        <p>Líderes negros convocaram um boicote aos ônibus para <strong>5 de dezembro</strong>. Naquela noite, criaram a <strong>Associação para o Progresso de Montgomery</strong> (MIA) e escolheram como presidente o jovem pastor da Dexter, de 26 anos. Horas depois, numa igreja lotada, King fez o discurso que o tornou conhecido em todo o país.</p>
-        <p>O boicote durou muito mais do que alguém imaginava. Os moradores negros, que eram a maioria dos passageiros, organizaram caronas, táxis solidários e caminharam quilômetros por dia. A reação foi dura: em <strong>30 de janeiro de 1956</strong>, uma bomba explodiu na varanda da casa de King, com Coretta e a filha bebê lá dentro. Diante de uma multidão armada e furiosa, ele pediu calma e respondeu com não violência.</p>
-        <p>Em fevereiro, dezenas de líderes foram indiciados com base numa antiga lei antiboicote; King foi condenado e multado. Mas a batalha decisiva aconteceu nos tribunais: no caso <strong>Browder v. Gayle</strong>, a Justiça federal declarou inconstitucional a segregação nos ônibus, decisão confirmada pela Suprema Corte em <strong>13 de novembro de 1956</strong>. Em <strong>21 de dezembro</strong>, depois de 381 dias, King e seus companheiros embarcaram num ônibus integrado.</p>
-      </div>
-      <div class="stack scene-media">
-        <figure class="photo photo--tall" data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg/960px-Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg?width=960" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg/1920px-Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" alt="Rosa Parks tendo as impressões digitais colhidas por um policial" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Rosa Parks é fichada em 22 de fevereiro de 1956, quando dezenas de organizadores do boicote foram indiciados.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" target="_blank" rel="noopener">Foto: Domínio público · Wikimedia Commons</a></figcaption>
-</figure>
-        <figure class="photo photo--small photo--offset" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Rosa_Parks_on_bus_on_December_21,_1956.jpg/960px-Rosa_Parks_on_bus_on_December_21,_1956.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/5/58/Rosa_Parks_on_bus_on_December_21,_1956.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Rosa_Parks_on_bus_on_December_21,_1956.jpg?width=960" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Rosa_Parks_on_bus_on_December_21,_1956.jpg/1920px-Rosa_Parks_on_bus_on_December_21,_1956.jpg" alt="Rosa Parks sentada num ônibus de Montgomery" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Rosa Parks num ônibus de Montgomery logo após o fim da segregação, em dezembro de 1956.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Rosa_Parks_on_bus_on_December_21,_1956.jpg" target="_blank" rel="noopener">Foto: Domínio público · Wikimedia Commons</a></figcaption>
-</figure>
-      </div>
-    </div>
-    <div class="days" aria-label="Contador dos 381 dias do boicote">
-      <div class="days__head">
-        <p class="days__counter">Dia <b class="days__num">0</b> <span>de 381</span></p>
-        <p class="days__hint">Cada ponto é um dia sem ônibus. Role para atravessar o boicote.</p>
-      </div>
-      <div class="days__grid" aria-hidden="true"></div>
-      <div class="days__marks" aria-hidden="true"><span>5 dez 1955</span><span>30 jan · bomba na casa de King</span><span>13 nov · Suprema Corte</span><span>21 dez 1956</span></div>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--sclc navy" id="nao-violencia" data-chapter="05" data-name="SCLC e a não violência" data-scene="zoom">
-  <div class="ripples" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">05</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>1957–1962 · Atlanta, Índia e o Sul</p>
-  <h2 class="chapter-title" data-anim="ripple">A força de <em>não revidar</em></h2>
-  <p class="lead">Depois de Montgomery, o movimento precisava de uma organização — e de uma filosofia capaz de suportar a violência sem devolvê-la.</p>
-</header>
-    <div class="prose prose--cols">
-      <p>Em <strong>janeiro de 1957</strong>, pastores de todo o Sul se reuniram em Atlanta e fundaram a organização que viria a se chamar <strong>Conferência da Liderança Cristã do Sul</strong> (SCLC), com King como primeiro presidente. A ideia era usar a rede de igrejas negras para coordenar protestos e, sobretudo, a luta pelo direito ao voto.</p>
-      <p>Em maio daquele ano, discursou em Washington pedindo o voto para os negros do Sul. Em 1958 lançou seu primeiro livro, <em>Stride Toward Freedom</em>, sobre o boicote. Durante uma sessão de autógrafos no Harlem, em <strong>20 de setembro de 1958</strong>, foi esfaqueado no peito por uma mulher com problemas mentais; a lâmina parou perto da aorta, e os médicos disseram que um simples espirro poderia tê-lo matado.</p>
-      <p>Em <strong>1959</strong>, passou cerca de um mês na <strong>Índia</strong>, visitando lugares ligados a Gandhi e encontrando o primeiro-ministro Jawaharlal Nehru. Voltou ainda mais convicto. Em 1960 mudou-se com a família para Atlanta para ser copastor da Ebenezer ao lado do pai e ficar mais perto da sede da SCLC.</p>
-      <p>Naquele ano, foi preso num protesto contra a segregação numa loja de departamentos de Atlanta e transferido para uma penitenciária estadual. Um telefonema do candidato John F. Kennedy a Coretta, e a intervenção de Robert Kennedy, ajudaram a libertá-lo — episódio que pesou na eleição presidencial. Em 1961 e 1962, a campanha de <strong>Albany</strong>, na Geórgia, terminou sem vitórias claras, mas deixou lições de estratégia que seriam decisivas no ano seguinte.</p>
-    </div>
-    <div class="principles">
-      <p class="principles__title">Os seis princípios da não violência <small>como King os apresentou em <em>Stride Toward Freedom</em> (1958)</small></p>
-      <ol class="principles__list">
-        <li data-tilt><span>I</span><p>A não violência é um caminho de vida para pessoas <strong>corajosas</strong> — não de covardes.</p></li>
-        <li data-tilt><span>II</span><p>Ela busca conquistar a <strong>amizade e a compreensão</strong> do adversário, não humilhá-lo.</p></li>
-        <li data-tilt><span>III</span><p>O alvo é derrotar a <strong>injustiça</strong>, não as pessoas.</p></li>
-        <li data-tilt><span>IV</span><p>O sofrimento imerecido, aceito sem retaliar, tem poder de <strong>transformar</strong>.</p></li>
-        <li data-tilt><span>V</span><p>Ela escolhe o <strong>amor</strong> em vez do ódio — também no interior de quem luta.</p></li>
-        <li data-tilt><span>VI</span><p>Ela parte da convicção de que o universo está do lado da <strong>justiça</strong>.</p></li>
-      </ol>
-    </div>
-    <figure class="influence">
-      <div class="influence__orbit" aria-hidden="true"><span>Gandhi</span><span>Sermão da Montanha</span><span>Thoreau</span><span>Igreja negra do Sul</span></div>
-      <figcaption>As raízes: a resistência civil de Gandhi, o Evangelho, o ensaio de Thoreau sobre desobediência civil e a tradição profética das igrejas negras. Conselheiros como Bayard Rustin ajudaram King a transformar essas ideias num método.</figcaption>
-    </figure>
-  </div>
-</section>
-
-<section class="chapter chapter--birmingham" id="birmingham" data-chapter="06" data-name="Birmingham" data-scene="bars">
-  <div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">06</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Birmingham, Alabama · abril–setembro de 1963</p>
-  <h2 class="chapter-title" data-anim="ink">Uma carta escrita na <em>prisão</em></h2>
-  <p class="lead">A cidade era considerada uma das mais segregadas do país. Foi lá que o movimento decidiu forçar o confronto — sem levantar a mão.</p>
-</header>
-    <div class="split">
-      <div class="prose">
-        <p class="dropcap">Birmingham era tão marcada por atentados contra famílias negras que ganhou o apelido de “Bombingham”. Em abril de 1963, a SCLC e o pastor local <strong>Fred Shuttlesworth</strong> lançaram uma campanha de boicotes, marchas e ocupações pacíficas de lanchonetes, apelidada internamente de “Projeto C” — de confronto.</p>
-        <p>Desafiando uma ordem judicial que proibia os protestos, King foi preso na <strong>Sexta-feira Santa, 12 de abril de 1963</strong>. Na cela, leu num jornal uma carta aberta de oito religiosos brancos que chamavam as manifestações de imprudentes e inoportunas. Respondeu escrevendo nas margens do próprio jornal e em pedaços de papel levados para fora às escondidas.</p>
-        <p>Datada de <strong>16 de abril</strong>, a <strong>“Carta da Prisão de Birmingham”</strong> explica por que os negros não podiam mais “esperar”, defende a desobediência a leis injustas e critica com dureza os moderados que preferiam a ordem à justiça. Tornou-se um dos textos mais importantes da história americana.</p>
-        <p>No início de maio, milhares de crianças e adolescentes saíram às ruas na chamada <strong>Cruzada das Crianças</strong>. O comissário de segurança pública <strong>Eugene “Bull” Connor</strong> respondeu com jatos d’água de alta pressão e cães policiais. As imagens correram o mundo, e em poucos dias a cidade aceitou um acordo para começar a dessegregar o comércio. Em junho, o presidente Kennedy anunciou ao país um projeto de lei de direitos civis.</p>
-        <p class="memorial">Em <strong>15 de setembro de 1963</strong>, uma bomba colocada por membros da Ku Klux Klan explodiu na Igreja Batista da Rua 16, matando quatro meninas: <strong>Addie Mae Collins, Cynthia Wesley, Carole Robertson e Carol Denise McNair</strong>. King falou no funeral de três delas.</p>
-      </div>
-      <div class="letter scene-media" aria-label="Trecho da Carta da Prisão de Birmingham">
-        <div class="letter__paper">
-          <p class="letter__date">Cadeia Municipal de Birmingham · 16 de abril de 1963</p>
-          <p class="letter__line">Meus caros colegas clérigos,</p>
-          <p class="letter__line letter__line--quote" lang="en">“Injustice anywhere is a threat to justice everywhere.”</p>
-          <p class="letter__line letter__line--pt">“A injustiça em qualquer lugar é uma ameaça à justiça em todo lugar.”</p>
-          <p class="letter__line letter__note">A carta tem cerca de 7 mil palavras. Nela, King recorre a Sócrates, Santo Agostinho, São Tomás de Aquino e aos profetas bíblicos para distinguir leis justas de leis injustas.</p>
-          <p class="letter__sign">M. L. King Jr.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--washington" id="washington" data-chapter="07" data-name="Marcha sobre Washington" data-scene="crowd">
-  <div class="media-bg" aria-hidden="true"><img class="media-bg__img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Civil_rights_march_on_Washington,_D.C..jpg/1920px-Civil_rights_march_on_Washington,_D.C..jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/2/23/Civil_rights_march_on_Washington,_D.C..jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Civil_rights_march_on_Washington,_D.C..jpg?width=1280" data-alts="1963_march_on_washington.jpg|March_on_washington_Aug_28_1963.jpg" alt="" loading="lazy" decoding="async" data-depth="0.25"></div>
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">07</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Washington, D.C. · 28 de agosto de 1963</p>
-  <h2 class="chapter-title" data-anim="scrub">“I have a <em>dream</em>”</h2>
-  <p class="lead">A maior manifestação de direitos civis que os Estados Unidos já tinham visto terminou com o discurso mais lembrado do século XX.</p>
-</header>
-    <div class="stats stats--big">
-      <div class="stat"><b data-count="250000">250.000</b><span>pessoas, segundo as estimativas mais citadas</span></div>
-      <div class="stat"><b data-count="17" data-suffix=" min">17 min</b><span>de discurso, aproximadamente</span></div>
-      <div class="stat"><b data-count="1963" data-from="1900" data-plain>1963</b><span>Lincoln Memorial, último orador do dia</span></div>
-    </div>
-    <div class="split">
-      <div class="scene-media stack">
-        <figure class="photo photo--tall photo--glow" data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Martin_Luther_King_-_March_on_Washington.jpg/1280px-Martin_Luther_King_-_March_on_Washington.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/8/81/Martin_Luther_King_-_March_on_Washington.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_-_March_on_Washington.jpg?width=1280" data-alts="Martin_Luther_King_-_March_on_Washington_(cropped).jpg|Dr._Martin_Luther_King_Jr._at_a_civil_rights_march_on_Washington_D.C._in_1963.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Martin_Luther_King_-_March_on_Washington.jpg/1920px-Martin_Luther_King_-_March_on_Washington.jpg" alt="Martin Luther King Jr. acenando para a multidão na Marcha sobre Washington" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">King acena para a multidão no Lincoln Memorial, 28 de agosto de 1963.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_-_March_on_Washington.jpg" target="_blank" rel="noopener">Foto: Arquivo Nacional dos EUA · domínio público</a></figcaption>
-</figure>
-        <figure class="photo photo--small photo--offset" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg/960px-Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/ea/Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg?width=960" data-alts="Dr._Martin_Luther_King_Jr._at_a_civil_rights_march_on_Washington_D.C._in_1963.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg/1920px-Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg" alt="Martin Luther King Jr. discursa para a multidão nos degraus do Lincoln Memorial" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Nos degraus do Lincoln Memorial, diante do espelho d’água tomado de gente.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg" target="_blank" rel="noopener">Foto: Corpo de Fuzileiros Navais dos EUA · domínio público</a></figcaption>
-</figure>
-      </div>
-      <div class="prose">
-        <p class="dropcap" data-scrub>A <strong>Marcha sobre Washington por Empregos e Liberdade</strong> foi organizada por uma coalizão de sindicatos, igrejas e entidades de direitos civis, sob a liderança do sindicalista <strong>A. Philip Randolph</strong> e do estrategista <strong>Bayard Rustin</strong>. Cerca de 250 mil pessoas, negras e brancas, ocuparam o National Mall pedindo a aprovação da lei de direitos civis, empregos e salário mínimo digno.</p>
-        <p data-scrub>King foi o último a falar. Ele tinha um texto preparado, mas, a certa altura, a cantora gospel <strong>Mahalia Jackson</strong>, que estava perto dele, gritou para que falasse do sonho. King deixou as folhas de lado e improvisou a sequência que repetia “I have a dream” — uma imagem que ele já tinha usado em discursos anteriores, mas nunca diante de um público e de câmeras daquele tamanho.</p>
-        <p data-scrub>Nela, sonhou com uma nação em que seus quatro filhos seriam julgados “não pela cor da pele, mas pelo conteúdo do caráter”, e terminou com o antigo spiritual: <em lang="en">“Free at last! Free at last! Thank God Almighty, we are free at last!”</em></p>
-        <p data-scrub>Poucos meses depois, a revista <em>Time</em> o escolheu como <strong>Personalidade do Ano de 1963</strong>.</p>
-      </div>
-    </div>
-    <div class="dream-words" aria-hidden="true"><span>I</span><span>have</span><span>a</span><span>dream</span></div>
-    <figure class="photo photo--panorama" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg/1920px-Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/e5/Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg?width=1280" data-alts="Martin_Luther_King_Jr._addresses_a_crowd_from_the_steps_of_the_Lincoln_Memorial,_USMC-09611.jpg|1963_march_on_washington.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg/1920px-Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg" alt="Martin Luther King Jr. durante o discurso na Marcha sobre Washington" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">28 de agosto de 1963: o dia em que a frase “I have a dream” entrou para a história.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_Jr._-_I_Have_A_Dream_Speech.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença na página do arquivo</a></figcaption>
-</figure>
-  </div>
-  <a class="bg-credit" href="https://commons.wikimedia.org/wiki/File:Civil_rights_march_on_Washington,_D.C..jpg" target="_blank" rel="noopener">Imagem de fundo: Warren K. Leffler / U.S. News &amp; World Report · Biblioteca do Congresso dos EUA · domínio público</a>
-</section>
-
-<section class="chapter chapter--nobel navy" id="nobel" data-chapter="08" data-name="Nobel da Paz" data-scene="gold">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">08</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Oslo, Noruega · 1964</p>
-  <h2 class="chapter-title" data-anim="gold">O Nobel da <em>Paz</em>, aos 35 anos</h2>
-  <p class="lead">O prêmio reconheceu não só um homem, mas um método: mudar um país sem pegar em armas.</p>
-</header>
-    <div class="nobel">
-      <div class="medal" aria-hidden="true">
-        <div class="medal__coin">
-          <div class="medal__face medal__face--front"><span class="medal__year">1964</span><span class="medal__word">PAX</span></div>
-          <div class="medal__face medal__face--back"><span class="medal__ring">Oslo · 10 · XII · 1964</span><span class="medal__initials">MLK</span></div>
-        </div>
-        <div class="medal__shadow"></div>
-      </div>
-      <div class="prose">
-        <p class="dropcap">Em <strong>14 de outubro de 1964</strong>, o Comitê Nobel norueguês anunciou que Martin Luther King Jr. receberia o <strong>Prêmio Nobel da Paz</strong> pela luta não violenta pelos direitos civis da população negra. Ele soube da notícia num hospital de Atlanta, onde estava internado por exaustão.</p>
-        <p>Recebeu a medalha em Oslo em <strong>10 de dezembro de 1964</strong>. Com 35 anos, era então a pessoa mais jovem a ganhar o Nobel da Paz. Anunciou que doaria todo o valor do prêmio ao movimento pelos direitos civis.</p>
-        <p>Meses antes, em <strong>2 de julho de 1964</strong>, o presidente <strong>Lyndon B. Johnson</strong> havia assinado a <strong>Lei dos Direitos Civis</strong>, com King presente na cerimônia. A lei proibiu a segregação em locais públicos e a discriminação no emprego por raça, cor, religião, sexo ou origem nacional.</p>
-        <blockquote class="pull">
-          <p lang="en">“I believe that unarmed truth and unconditional love will have the final word in reality.”</p>
-          <p class="pull__pt">“Creio que a verdade desarmada e o amor incondicional terão a palavra final na realidade.”</p>
-          <cite>— Discurso de aceitação do Nobel, Oslo, 10 de dezembro de 1964</cite>
-        </blockquote>
-      </div>
-    </div>
-    <div class="duo-row">
-      <figure class="photo " data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg/1280px-Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg?width=1280" data-alts="LBJ_Civil_Rights_Act_crowd.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg/1920px-Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" alt="Lyndon B. Johnson assina a Lei dos Direitos Civis rodeado de convidados" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">2 de julho de 1964: Lyndon B. Johnson assina a Lei dos Direitos Civis na Casa Branca.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" target="_blank" rel="noopener">Foto: Cecil Stoughton, Casa Branca · domínio público</a></figcaption>
-</figure>
-      <figure class="photo " data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Martin-Luther-King-1964-leaning-on-a-lectern.jpg/1280px-Martin-Luther-King-1964-leaning-on-a-lectern.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a5/Martin-Luther-King-1964-leaning-on-a-lectern.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin-Luther-King-1964-leaning-on-a-lectern.jpg?width=1280" data-alts="Martin_Luther_King_Jr_NYWTS_4.jpg|Martin_Luther_King_Jr_NYWTS_6.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Martin-Luther-King-1964-leaning-on-a-lectern.jpg/1920px-Martin-Luther-King-1964-leaning-on-a-lectern.jpg" alt="Martin Luther King Jr. apoiado num púlpito em 1964" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">King em 1964, o ano da Lei dos Direitos Civis e do Nobel.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin-Luther-King-1964-leaning-on-a-lectern.jpg" target="_blank" rel="noopener">Foto: Marion S. Trikosko · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--selma" id="selma" data-chapter="09" data-name="Selma e as leis" data-scene="road">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">09</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Selma → Montgomery, Alabama · 1965</p>
-  <h2 class="chapter-title" data-anim="march">87 quilômetros até o <em>voto</em></h2>
-  <p class="lead">A Lei dos Direitos Civis não garantia o voto. Para isso, foi preciso atravessar uma ponte.</p>
-</header>
-    <div class="split">
-      <div class="prose">
-        <p class="dropcap">Em Selma, no Alabama, a população negra era maioria em idade de votar, mas só uma fração mínima conseguia se registrar como eleitora. Em fevereiro de 1965, numa cidade vizinha, o jovem diácono <strong>Jimmie Lee Jackson</strong> foi baleado por um policial estadual durante um protesto e morreu dias depois. A resposta foi planejar uma marcha até Montgomery, a capital.</p>
-        <p>Em <strong>7 de março de 1965</strong>, cerca de 600 manifestantes liderados por <strong>John Lewis</strong> e <strong>Hosea Williams</strong> foram atacados com cassetetes e gás lacrimogêneo por policiais estaduais e agentes do xerife na <strong>Ponte Edmund Pettus</strong>. O dia, transmitido pela televisão, ficou conhecido como <strong>“Domingo Sangrento”</strong>.</p>
-        <p>Dois dias depois, King levou milhares de pessoas de volta à ponte, ajoelhou-se para rezar e deu meia-volta, respeitando uma ordem judicial temporária. Naquela noite, o pastor branco James Reeb, que tinha ido a Selma apoiar a marcha, foi espancado por segregacionistas e morreu. Em <strong>15 de março</strong>, o presidente Johnson foi ao Congresso pedir uma lei do voto e encerrou o discurso com o lema do movimento: <em lang="en">“We shall overcome”</em>.</p>
-        <p>Em <strong>21 de março</strong>, sob proteção federal, a marcha finalmente partiu. Chegou a Montgomery em <strong>25 de março</strong>, com cerca de 25 mil pessoas diante do Capitólio estadual. Em <strong>6 de agosto de 1965</strong>, Johnson assinou a <strong>Lei do Direito ao Voto</strong>, que proibiu os testes de alfabetização e outras barreiras usadas para impedir os negros de votar.</p>
-      </div>
-      <div class="scene-media stack">
-        <figure class="photo photo--tall" data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Selma_to_Montgomery_Marches.jpg/1280px-Selma_to_Montgomery_Marches.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/99/Selma_to_Montgomery_Marches.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Selma_to_Montgomery_Marches.jpg?width=1280" data-alts="Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Selma_to_Montgomery_Marches.jpg/1920px-Selma_to_Montgomery_Marches.jpg" alt="Manifestantes caminhando na marcha de Selma a Montgomery em 1965" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Manifestantes na marcha de Selma a Montgomery, março de 1965.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Selma_to_Montgomery_Marches.jpg" target="_blank" rel="noopener">Foto: Peter Pettus · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-        <figure class="photo photo--small photo--offset" data-reveal="color" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/The_Edmund_Pettus_Bridge_07312v.jpg/960px-The_Edmund_Pettus_Bridge_07312v.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/e3/The_Edmund_Pettus_Bridge_07312v.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/The_Edmund_Pettus_Bridge_07312v.jpg?width=960" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/The_Edmund_Pettus_Bridge_07312v.jpg/1920px-The_Edmund_Pettus_Bridge_07312v.jpg" alt="A Ponte Edmund Pettus sobre o rio Alabama, em Selma" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">A Ponte Edmund Pettus, em Selma, palco do “Domingo Sangrento”.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:The_Edmund_Pettus_Bridge_07312v.jpg" target="_blank" rel="noopener">Foto: Carol M. Highsmith · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-      </div>
-    </div>
-    <div class="route" aria-label="Percurso da marcha de Selma a Montgomery">
-      <svg class="route__svg" viewBox="0 0 1000 260" preserveAspectRatio="none" aria-hidden="true">
-        <path class="route__base" d="M40 190 C 160 150, 230 230, 340 180 S 520 90, 620 140 S 800 210, 960 80"/>
-        <path class="route__draw" d="M40 190 C 160 150, 230 230, 340 180 S 520 90, 620 140 S 800 210, 960 80"/>
-      </svg>
-      <span class="route__walker" aria-hidden="true"></span>
-      <div class="route__labels">
-        <p class="route__city route__city--a"><b>Selma</b><span>Ponte Edmund Pettus · 21 mar</span></p>
-        <p class="route__city route__city--b"><b>Montgomery</b><span>Capitólio do Alabama · 25 mar</span></p>
-      </div>
-      <p class="route__km"><b class="route__km-num">0</b> km de 87</p>
-    </div>
-    <div class="laws">
-      <article class="law" data-tilt>
-        <span class="law__year">1964</span>
-        <h3>Lei dos Direitos Civis</h3>
-        <p>Assinada em 2 de julho de 1964. Proibiu a segregação em hotéis, restaurantes, teatros e outros locais públicos e a discriminação no emprego.</p>
-      </article>
-      <article class="law" data-tilt>
-        <span class="law__year">1965</span>
-        <h3>Lei do Direito ao Voto</h3>
-        <p>Assinada em 6 de agosto de 1965. Derrubou os testes de alfabetização e colocou sob supervisão federal os locais com histórico de discriminação eleitoral.</p>
-      </article>
-      <figure class="photo law law--photo" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg/960px-Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg?width=960" data-alts="LyndonJohnson_signs_Voting_Rights_Act_of_1965.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg/1920px-Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" alt="Lyndon B. Johnson e Martin Luther King Jr. na assinatura da Lei do Direito ao Voto" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Johnson e King na época da Lei do Direito ao Voto, 1965.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" target="_blank" rel="noopener">Foto: Yoichi Okamoto, Biblioteca LBJ · domínio público</a></figcaption>
-</figure>
-    </div>
-    <figure class="photo photo--panorama" data-reveal="sepia" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg/1920px-Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg?width=1280" data-alts="Selma_to_Montgomery_Marches.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg/1920px-Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" alt="Manifestantes na marcha de Selma a Montgomery, entre eles o rabino Abraham Joshua Heschel" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">Na marcha de Selma, o rabino Abraham Joshua Heschel caminhou ao lado de King. O rabino Abraham Joshua Heschel disse depois que, ao marchar, sentia que suas pernas estavam rezando.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença na página do arquivo</a></figcaption>
-</figure>
-  </div>
-</section>
-
-<section class="chapter chapter--ultimos" id="ultimos-anos" data-chapter="10" data-name="Últimos anos" data-scene="split">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">10</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>1966–1968 · Chicago, Nova York, Memphis</p>
-  <h2 class="chapter-title" data-anim="scramble">Além do <em>sonho</em></h2>
-  <p class="lead">Nos últimos anos, King ampliou a luta: da segregação para a pobreza e a guerra. E perdeu parte de seus aliados.</p>
-</header>
-    <div class="headlines">
-      <article class="headline" data-tilt>
-        <p class="headline__kicker">1966 · Chicago</p>
-        <h3 data-scramble>O racismo também mora no Norte</h3>
-        <p>Com o Movimento pela Liberdade de Chicago, King levou a campanha às grandes cidades do Norte para enfrentar a discriminação na moradia. Numa marcha em um bairro branco, foi atingido por uma pedra e disse nunca ter visto uma hostilidade tão grande, nem mesmo no Sul.</p>
-      </article>
-      <article class="headline headline--big" data-tilt>
-        <p class="headline__kicker">4 de abril de 1967 · Igreja Riverside, Nova York</p>
-        <h3 data-scramble>“Chega um tempo em que o silêncio é traição”</h3>
-        <p>No discurso <em lang="en">“Beyond Vietnam”</em>, King condenou publicamente a <strong>Guerra do Vietnã</strong>, ligando o militarismo à pobreza e ao racismo. Jornais influentes e até organizações de direitos civis o criticaram; a Casa Branca se afastou. Ele manteve a posição. A data cairia exatamente um ano antes de sua morte.</p>
-        <p class="headline__en" lang="en">“A time comes when silence is betrayal.”</p>
-      </article>
-      <article class="headline" data-tilt>
-        <p class="headline__kicker">Dezembro de 1967 · SCLC</p>
-        <h3 data-scramble>A Campanha dos Pobres</h3>
-        <p>King anunciou uma campanha multirracial — de negros, brancos pobres, indígenas e latinos — para acampar em Washington e exigir empregos, renda e moradia. Ele não viveu para vê-la: a ocupação da “Cidade da Ressurreição” aconteceu em maio e junho de 1968.</p>
-      </article>
-      <article class="headline" data-tilt>
-        <p class="headline__kicker">Fevereiro–março de 1968 · Memphis</p>
-        <h3 data-scramble>“I AM A MAN”</h3>
-        <p>Depois que dois coletores de lixo, Echol Cole e Robert Walker, morreram esmagados por um caminhão defeituoso, os trabalhadores negros do saneamento de Memphis entraram em greve. Os cartazes diziam apenas “Eu sou um homem”. King foi apoiá-los.</p>
-      </article>
-    </div>
-    <div class="duo-row duo-row--uneven">
-      <figure class="photo " data-reveal="sepia" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg/1280px-MLK_and_Malcolm_X_USNWR_cropped.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_and_Malcolm_X_USNWR_cropped.jpg?width=1280" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg/1920px-MLK_and_Malcolm_X_USNWR_cropped.jpg" alt="Martin Luther King Jr. e Malcolm X sorrindo e apertando as mãos no Capitólio dos EUA" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">26 de março de 1964: o único encontro entre King e Malcolm X, no Capitólio, durante o debate da Lei dos Direitos Civis. Durou cerca de um minuto.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:MLK_and_Malcolm_X_USNWR_cropped.jpg" target="_blank" rel="noopener">Foto: Marion S. Trikosko / U.S. News &amp; World Report · Biblioteca do Congresso dos EUA · domínio público</a></figcaption>
-</figure>
-      <p class="duo-row__note">Dois caminhos diferentes para a mesma luta. Malcolm X foi assassinado em fevereiro de 1965; nos anos seguintes, o discurso de King se tornaria cada vez mais radical na crítica à pobreza e à guerra.</p>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--memphis" id="memphis" data-chapter="11" data-name="Memphis, 1968" data-scene="dark" data-spotlight>
-  <div class="spotlight" aria-hidden="true"></div>
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">11</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Memphis, Tennessee · 3–9 de abril de 1968</p>
-  <h2 class="chapter-title" data-anim="dusk">18h01</h2>
-  <p class="lead">Mova o cursor (ou o dedo) para iluminar a história.</p>
-</header>
-    <div class="clock" aria-hidden="true">
-      <div class="clock__face"><span class="clock__h"></span><span class="clock__m"></span><span class="clock__c"></span></div>
-    </div>
-    <div class="split">
-      <div class="prose">
-        <p class="dropcap">Na noite de <strong>3 de abril de 1968</strong>, sob tempestade, King falou no Mason Temple, em Memphis. Cansado e em meio a ameaças, fez um discurso que hoje soa como uma despedida:</p>
-        <blockquote class="pull pull--candle">
-          <p lang="en">“I’ve seen the Promised Land. I may not get there with you.”</p>
-          <p class="pull__pt">“Eu vi a Terra Prometida. Talvez eu não chegue lá com vocês.”</p>
-          <cite>— “I’ve Been to the Mountaintop”, 3 de abril de 1968</cite>
-        </blockquote>
-        <p>No dia seguinte, <strong>4 de abril</strong>, às <strong>18h01</strong>, ele estava na varanda do quarto 306 do <strong>Lorraine Motel</strong>, conversando com os companheiros antes de sair para jantar, quando foi atingido por um tiro de rifle. Foi levado ao Hospital St. Joseph, onde morreu às 19h05. Tinha <strong>39 anos</strong>.</p>
-        <p>A notícia provocou revoltas em mais de cem cidades americanas. Em Indianápolis, Robert F. Kennedy subiu num palanque improvisado para dar a notícia a uma multidão negra e pediu compaixão em vez de vingança. No mundo inteiro, de líderes de Estado a pessoas comuns, houve homenagens e luto.</p>
-        <p>O funeral, em <strong>9 de abril</strong>, começou na Igreja Ebenezer, onde foi tocada uma gravação de um sermão do próprio King sobre como gostaria de ser lembrado. Depois, o caixão atravessou Atlanta numa carroça de madeira puxada por mulas — símbolo da Campanha dos Pobres —, seguido por dezenas de milhares de pessoas, até o Morehouse College.</p>
-        <p>O atirador, <strong>James Earl Ray</strong>, foi preso em Londres em junho de 1968, declarou-se culpado em 1969 e foi condenado a 99 anos de prisão. Pouco depois, retirou a confissão. A família King passou a defender a reabertura do caso; uma investigação do Departamento de Justiça concluída em 2000 não encontrou provas confiáveis de uma conspiração. Uma semana após o assassinato, em <strong>11 de abril de 1968</strong>, Johnson assinou a Lei da Moradia Justa, que proibiu a discriminação na venda e no aluguel de imóveis.</p>
-      </div>
-      <div class="scene-media stack">
-        <figure class="photo photo--tall" data-reveal="color" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lorraine_Motel_Memphis.jpg/1280px-Lorraine_Motel_Memphis.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/6f/Lorraine_Motel_Memphis.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lorraine_Motel_Memphis.jpg?width=1280" data-alts="The_Lorraine_Motel,_site_of_the_Martin_Luther_King_assassination_and_the_National_Civil_Rights_Museum..jpg|Lorraine_Motel,_Memphis,_Tennessee.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lorraine_Motel_Memphis.jpg/1920px-Lorraine_Motel_Memphis.jpg" alt="Fachada do antigo Lorraine Motel, em Memphis, hoje Museu Nacional dos Direitos Civis" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">O Lorraine Motel, em Memphis. Desde 1991, abriga o Museu Nacional dos Direitos Civis.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Lorraine_Motel_Memphis.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença livre na página do arquivo</a></figcaption>
-</figure>
-        <div class="candle" aria-hidden="true"><span class="candle__flame"></span><span class="candle__body"></span><span class="candle__glow"></span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--legado" id="legado" data-chapter="12" data-name="Legado" data-scene="dawn" data-spotlight="soft">
-  <div class="dawn" aria-hidden="true"><span class="dawn__sun"></span></div>
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">12</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>1968 → hoje</p>
-  <h2 class="chapter-title" data-anim="sunrise">O sonho <em>continua</em></h2>
-  <p class="lead">Ele viveu 39 anos. O que construiu segue em movimento.</p>
-</header>
-    <div class="stats">
-      <div class="stat"><b data-count="39">39</b><span>anos de vida</span></div>
-      <div class="stat"><b data-count="13">13</b><span>anos à frente do movimento, de Montgomery a Memphis</span></div>
-      <div class="stat"><b data-count="381">381</b><span>dias de boicote em Montgomery</span></div>
-      <div class="stat"><b data-count="250000">250.000</b><span>pessoas na Marcha sobre Washington</span></div>
-      <div class="stat"><b data-count="87" data-suffix=" km">87 km</b><span>de Selma a Montgomery</span></div>
-      <div class="stat"><b data-count="9.6" data-decimals="1">9,6</b><span>milhões de km percorridos entre 1957 e 1968 (mais de 6 milhões de milhas)</span></div>
-      <div class="stat"><b data-count="2500" data-prefix="+">+2.500</b><span>discursos no mesmo período</span></div>
-      <div class="stat"><b data-count="29">29</b><span>prisões, segundo o King Center</span></div>
-    </div>
-    <div class="split">
-      <div class="prose">
-        <p class="dropcap">Coretta Scott King dedicou o resto da vida a manter vivo o trabalho do marido. Ainda em 1968, fundou em Atlanta o <strong>King Center</strong> e liderou por quinze anos a campanha por um feriado nacional. Em <strong>2 de novembro de 1983</strong>, o presidente Ronald Reagan sancionou o <strong>Dia de Martin Luther King Jr.</strong>, celebrado na terceira segunda-feira de janeiro. Foi observado pela primeira vez em <strong>20 de janeiro de 1986</strong>, e desde 2000 é reconhecido em todos os 50 estados.</p>
-        <p>King recebeu postumamente a <strong>Medalha Presidencial da Liberdade</strong> (1977) e, junto com Coretta, a <strong>Medalha de Ouro do Congresso</strong> (2004). Em <strong>16 de outubro de 2011</strong>, foi inaugurado o <strong>Memorial Nacional Martin Luther King Jr.</strong> em Washington — o primeiro no National Mall dedicado a um afro-americano. A estátua emerge de um bloco de granito, a “Pedra da Esperança”, imagem tirada do próprio discurso de 1963.</p>
-        <p>Ruas, escolas e praças com seu nome existem em vários países, e seus textos continuam sendo lidos em movimentos por direitos humanos no mundo todo. Muitas das questões que ele levantou — desigualdade racial, pobreza, violência policial, acesso ao voto, guerra — seguem no centro do debate público. Por isso, mais do que um monumento, o legado de King é uma pergunta que cada geração precisa responder.</p>
-      </div>
-      <div class="scene-media stack">
-        <figure class="photo photo--tall" data-reveal="color" data-tilt>
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/MLK_memorial_sculpture.jpg/1280px-MLK_memorial_sculpture.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/4c/MLK_memorial_sculpture.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_memorial_sculpture.jpg?width=1280" data-alts="The_Rev._Dr._Martin_Luther_King_Jr._Memorial.jpg|20111008-OC-LSC-0058_-_Flickr_-_USDAgov.jpg|Martin_Luther_King_Jr._Memorial.jpg" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/MLK_memorial_sculpture.jpg/1920px-MLK_memorial_sculpture.jpg" alt="Estátua de Martin Luther King Jr. esculpida em granito no memorial em Washington" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">O Memorial Nacional Martin Luther King Jr., inaugurado em 2011 em Washington.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:MLK_memorial_sculpture.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença livre na página do arquivo</a></figcaption>
-</figure>
-        <figure class="photo photo--small photo--offset" data-reveal="color" >
-  <div class="photo__frame"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg/960px-Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a7/Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg?width=960" data-alts="MLK_tomb.JPG" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg/1920px-Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg" alt="Túmulo de Martin Luther King Jr. e Coretta Scott King cercado por um espelho d’água em Atlanta" loading="lazy" decoding="async"></div>
-  <figcaption><span class="photo__cap">O túmulo de Martin e Coretta no King Center, em Atlanta. Coretta morreu em 2006.</span><a class="photo__credit" href="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_Jr_Coretta_Scott_King_Tomb.jpg" target="_blank" rel="noopener">Foto: Wikimedia Commons · autor e licença livre na página do arquivo</a></figcaption>
-</figure>
-      </div>
-    </div>
-    <div class="candles" aria-label="Velas acesas pela memória">
-      <p class="candles__hint">Passe o cursor ou toque para acender uma vela.</p>
-      <div class="candles__row"></div>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--timeline navy" id="linha-do-tempo" data-chapter="13" data-name="Linha do tempo" data-scene="draw">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">13</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>1929 → 2011</p>
-  <h2 class="chapter-title" data-anim="rise">A linha do <em>tempo</em></h2>
-  <p class="lead">Role para desenhar a trajetória. Use os filtros para destacar cada fase.</p>
-</header>
-    <div class="chips" role="group" aria-label="Filtrar a linha do tempo por fase"><button type="button" class="chip is-active" data-filter="todos" aria-pressed="true">Tudo</button><button type="button" class="chip" data-filter="formacao" aria-pressed="false">1929–1954 · Formação</button><button type="button" class="chip" data-filter="ascensao" aria-pressed="false">1955–1962 · Ascensão</button><button type="button" class="chip" data-filter="vitorias" aria-pressed="false">1963–1965 · Vitórias</button><button type="button" class="chip" data-filter="final" aria-pressed="false">1966–1968 · Últimos anos</button><button type="button" class="chip" data-filter="legado" aria-pressed="false">Depois de 1968</button></div>
-    <div class="timeline">
-      <div class="timeline__track" aria-hidden="true"><span class="timeline__fill"></span><span class="timeline__pen"></span></div>
-      <ol class="timeline__list">
-        <li class="tl-item tl-item--l" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Martin_Luther_King_Jr._birth_home.jpg/330px-Martin_Luther_King_Jr._birth_home.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/41/Martin_Luther_King_Jr._birth_home.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_Jr._birth_home.jpg?width=330" data-alts="Martin_Luther_King_Jr._National_Historic_Site_August_2016_17_(King_Birth_Home).jpg|Martin_Luther_King&#x27;s_Boyhood_Home.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">15 jan 1929</p>
-        <h3 class="tl-title">Nascimento em Atlanta</h3>
-        <p class="tl-text">Nasce Michael King, na casa da Auburn Avenue, 501.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">1934</p>
-        <h3 class="tl-title">Um novo nome</h3>
-        <p class="tl-text">O pai adota o nome Martin Luther e muda também o do filho.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">1944</p>
-        <h3 class="tl-title">Faculdade aos 15</h3>
-        <p class="tl-text">Entra no Morehouse College, em Atlanta.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">1948</p>
-        <h3 class="tl-title">Bacharel e pastor</h3>
-        <p class="tl-text">Forma-se em Sociologia, é ordenado e vai para o seminário Crozer.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">1951</p>
-        <h3 class="tl-title">Primeiro da turma</h3>
-        <p class="tl-text">Conclui o Bacharelado em Divindade em Crozer e começa o doutorado em Boston.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coretta_Scott_King_1964.jpg/330px-Coretta_Scott_King_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/74/Coretta_Scott_King_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_1964.jpg?width=330" data-alts="Coretta_Scott_King_1964_(1).jpg|Coretta_Scott_King.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">18 jun 1953</p>
-        <h3 class="tl-title">Casamento</h3>
-        <p class="tl-text">Casa-se com Coretta Scott em Marion, no Alabama.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="formacao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Dexter_Avenue_Baptist_Church.jpg/330px-Dexter_Avenue_Baptist_Church.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/b/b0/Dexter_Avenue_Baptist_Church.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Dexter_Avenue_Baptist_Church.jpg?width=330" data-alts="Dexter_Avenue_Baptist.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">1954</p>
-        <h3 class="tl-title">Igreja Dexter</h3>
-        <p class="tl-text">Torna-se pastor da Igreja Batista da Avenida Dexter, em Montgomery.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">5 jun 1955</p>
-        <h3 class="tl-title">Doutor em Teologia</h3>
-        <p class="tl-text">Recebe o doutorado pela Universidade de Boston.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg/330px-Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg?width=330" alt="" loading="lazy" decoding="async"></span><p class="tl-date">1–5 dez 1955</p>
-        <h3 class="tl-title">Rosa Parks e o boicote</h3>
-        <p class="tl-text">Rosa Parks é presa; começa o boicote e King assume a presidência da MIA.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">30 jan 1956</p>
-        <h3 class="tl-title">Bomba em casa</h3>
-        <p class="tl-text">Sua casa é atingida por uma bomba. Ele pede calma à multidão.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Rosa_Parks_on_bus_on_December_21,_1956.jpg/330px-Rosa_Parks_on_bus_on_December_21,_1956.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/5/58/Rosa_Parks_on_bus_on_December_21,_1956.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Rosa_Parks_on_bus_on_December_21,_1956.jpg?width=330" alt="" loading="lazy" decoding="async"></span><p class="tl-date">21 dez 1956</p>
-        <h3 class="tl-title">Fim do boicote</h3>
-        <p class="tl-text">Após 381 dias, os ônibus de Montgomery são integrados.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">jan 1957</p>
-        <h3 class="tl-title">Nasce a SCLC</h3>
-        <p class="tl-text">King é eleito o primeiro presidente da organização.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">20 set 1958</p>
-        <h3 class="tl-title">Esfaqueado no Harlem</h3>
-        <p class="tl-text">Sobrevive a um ataque durante uma sessão de autógrafos.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">1959</p>
-        <h3 class="tl-title">Viagem à Índia</h3>
-        <p class="tl-text">Passa cerca de um mês conhecendo o legado de Gandhi.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="ascensao">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg/330px-Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/1/1a/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Ebenezer_Baptist_Church_-_Atlanta_Georgia.jpg?width=330" data-alts="Ebenezer_Baptist_Church,_Atlanta,_Georgia,_United_States.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">1960</p>
-        <h3 class="tl-title">Volta a Atlanta</h3>
-        <p class="tl-text">Torna-se copastor da Ebenezer; em outubro, é preso num protesto.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">12–16 abr 1963</p>
-        <h3 class="tl-title">Carta de Birmingham</h3>
-        <p class="tl-text">Preso na Sexta-feira Santa, escreve a carta na cela.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Martin_Luther_King_-_March_on_Washington.jpg/330px-Martin_Luther_King_-_March_on_Washington.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/8/81/Martin_Luther_King_-_March_on_Washington.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_-_March_on_Washington.jpg?width=330" data-alts="Martin_Luther_King_-_March_on_Washington_(cropped).jpg|Dr._Martin_Luther_King_Jr._at_a_civil_rights_march_on_Washington_D.C._in_1963.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">28 ago 1963</p>
-        <h3 class="tl-title">Marcha sobre Washington</h3>
-        <p class="tl-text">Faz o discurso “I Have a Dream” para cerca de 250 mil pessoas.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">15 set 1963</p>
-        <h3 class="tl-title">Atentado na Rua 16</h3>
-        <p class="tl-text">Quatro meninas morrem na explosão da igreja em Birmingham.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg/330px-Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg?width=330" data-alts="LBJ_Civil_Rights_Act_crowd.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">2 jul 1964</p>
-        <h3 class="tl-title">Lei dos Direitos Civis</h3>
-        <p class="tl-text">Johnson assina a lei; King está presente.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Martin-Luther-King-1964-leaning-on-a-lectern.jpg/330px-Martin-Luther-King-1964-leaning-on-a-lectern.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a5/Martin-Luther-King-1964-leaning-on-a-lectern.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin-Luther-King-1964-leaning-on-a-lectern.jpg?width=330" data-alts="Martin_Luther_King_Jr_NYWTS_4.jpg|Martin_Luther_King_Jr_NYWTS_6.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">10 dez 1964</p>
-        <h3 class="tl-title">Nobel da Paz</h3>
-        <p class="tl-text">Recebe o prêmio em Oslo, aos 35 anos.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/The_Edmund_Pettus_Bridge_07312v.jpg/330px-The_Edmund_Pettus_Bridge_07312v.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/e3/The_Edmund_Pettus_Bridge_07312v.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/The_Edmund_Pettus_Bridge_07312v.jpg?width=330" alt="" loading="lazy" decoding="async"></span><p class="tl-date">7 mar 1965</p>
-        <h3 class="tl-title">Domingo Sangrento</h3>
-        <p class="tl-text">Manifestantes são atacados na Ponte Edmund Pettus.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Selma_to_Montgomery_Marches.jpg/330px-Selma_to_Montgomery_Marches.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/99/Selma_to_Montgomery_Marches.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Selma_to_Montgomery_Marches.jpg?width=330" data-alts="Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">21–25 mar 1965</p>
-        <h3 class="tl-title">De Selma a Montgomery</h3>
-        <p class="tl-text">A marcha percorre 87 km até o Capitólio do Alabama.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="vitorias">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg/330px-Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg?width=330" data-alts="LyndonJohnson_signs_Voting_Rights_Act_of_1965.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">6 ago 1965</p>
-        <h3 class="tl-title">Lei do Direito ao Voto</h3>
-        <p class="tl-text">Johnson assina a lei que derruba as barreiras ao voto.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="final">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">1966</p>
-        <h3 class="tl-title">Chicago</h3>
-        <p class="tl-text">Leva a luta contra a discriminação habitacional ao Norte.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="final">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">4 abr 1967</p>
-        <h3 class="tl-title">“Beyond Vietnam”</h3>
-        <p class="tl-text">Condena a Guerra do Vietnã na Igreja Riverside, em Nova York.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="final">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">dez 1967</p>
-        <h3 class="tl-title">Campanha dos Pobres</h3>
-        <p class="tl-text">Anuncia uma mobilização multirracial contra a pobreza.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="final">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">3 abr 1968</p>
-        <h3 class="tl-title">“Mountaintop”</h3>
-        <p class="tl-text">Último discurso, no Mason Temple, em Memphis.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="final">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lorraine_Motel_Memphis.jpg/330px-Lorraine_Motel_Memphis.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/6f/Lorraine_Motel_Memphis.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lorraine_Motel_Memphis.jpg?width=330" data-alts="The_Lorraine_Motel,_site_of_the_Martin_Luther_King_assassination_and_the_National_Civil_Rights_Museum..jpg|Lorraine_Motel,_Memphis,_Tennessee.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">4 abr 1968</p>
-        <h3 class="tl-title">Assassinato</h3>
-        <p class="tl-text">É morto às 18h01 na varanda do Lorraine Motel.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="final">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">9 abr 1968</p>
-        <h3 class="tl-title">Funeral em Atlanta</h3>
-        <p class="tl-text">Dezenas de milhares acompanham o cortejo.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="legado">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">2 nov 1983</p>
-        <h3 class="tl-title">Feriado nacional</h3>
-        <p class="tl-text">Reagan sanciona o Dia de Martin Luther King Jr.</p>
-      </article>
-    </li><li class="tl-item tl-item--l" data-era="legado">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <p class="tl-date">20 jan 1986</p>
-        <h3 class="tl-title">Primeira celebração</h3>
-        <p class="tl-text">O feriado é observado pela primeira vez.</p>
-      </article>
-    </li><li class="tl-item tl-item--r" data-era="legado">
-      <span class="tl-dot" aria-hidden="true"></span>
-      <article class="tl-card" tabindex="0">
-        <span class="tl-thumb"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/MLK_memorial_sculpture.jpg/330px-MLK_memorial_sculpture.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/4c/MLK_memorial_sculpture.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_memorial_sculpture.jpg?width=330" data-alts="The_Rev._Dr._Martin_Luther_King_Jr._Memorial.jpg|20111008-OC-LSC-0058_-_Flickr_-_USDAgov.jpg|Martin_Luther_King_Jr._Memorial.jpg" alt="" loading="lazy" decoding="async"></span><p class="tl-date">16 out 2011</p>
-        <h3 class="tl-title">Memorial em Washington</h3>
-        <p class="tl-text">Inaugurado o memorial no National Mall.</p>
-      </article>
-    </li>
-      </ol>
-    </div>
-  </div>
-</section>
-
-<section class="chapter chapter--quotes" id="citacoes" data-chapter="14" data-name="Citações" data-scene="type">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">14</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Nas palavras dele</p>
-  <h2 class="chapter-title" data-anim="type">Frases que <em>atravessaram</em> o tempo</h2>
-  <p class="lead">Traduções nossas, com o original em inglês e a fonte de cada trecho.</p>
-</header>
-    <div class="typewriter" aria-live="off">
-      <p class="typewriter__pt"><span class="typewriter__text"></span><span class="typewriter__caret" aria-hidden="true"></span></p>
-      <p class="typewriter__en" lang="en"></p>
-      <p class="typewriter__src"></p>
-      <div class="typewriter__nav">
-        <button type="button" class="tw-btn" data-tw="prev" aria-label="Citação anterior">←</button>
-        <span class="typewriter__count">01 / 09</span>
-        <button type="button" class="tw-btn" data-tw="next" aria-label="Próxima citação">→</button>
-      </div>
-    </div>
-    <ul class="qgrid">
-      <li class="qcard" style="--i:0" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">A injustiça em qualquer lugar é uma ameaça à justiça em todo lugar.</p>
-      <p class="qcard__en" lang="en">Injustice anywhere is a threat to justice everywhere.</p>
-      <p class="qcard__src">“Carta da Prisão de Birmingham”, 16 de abril de 1963</p>
-    </li><li class="qcard" style="--i:1" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">A escuridão não pode expulsar a escuridão; só a luz pode fazer isso. O ódio não pode expulsar o ódio; só o amor pode fazer isso.</p>
-      <p class="qcard__en" lang="en">Darkness cannot drive out darkness; only light can do that. Hate cannot drive out hate; only love can do that.</p>
-      <p class="qcard__src"><em>Strength to Love</em> (Força para Amar), 1963</p>
-    </li><li class="qcard" style="--i:2" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">…não serão julgados pela cor da pele, mas pelo conteúdo do caráter.</p>
-      <p class="qcard__en" lang="en">…they will not be judged by the color of their skin but by the content of their character.</p>
-      <p class="qcard__src">“I Have a Dream”, Washington, 28 de agosto de 1963</p>
-    </li><li class="qcard" style="--i:3" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">A medida definitiva de um homem não é onde ele está nos momentos de conforto e conveniência, mas onde ele está nos tempos de desafio e controvérsia.</p>
-      <p class="qcard__en" lang="en">The ultimate measure of a man is not where he stands in moments of comfort and convenience, but where he stands at times of challenge and controversy.</p>
-      <p class="qcard__src"><em>Strength to Love</em> (Força para Amar), 1963</p>
-    </li><li class="qcard" style="--i:4" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">A não violência é uma arma poderosa e justa. É uma arma única na história, que corta sem ferir e enobrece quem a empunha.</p>
-      <p class="qcard__en" lang="en">Nonviolence is a powerful and just weapon. It is a weapon unique in history, which cuts without wounding and ennobles the man who wields it.</p>
-      <p class="qcard__src"><em>Why We Can’t Wait</em> (Por que não podemos esperar), 1964</p>
-    </li><li class="qcard" style="--i:5" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">Creio que a verdade desarmada e o amor incondicional terão a palavra final na realidade.</p>
-      <p class="qcard__en" lang="en">I believe that unarmed truth and unconditional love will have the final word in reality.</p>
-      <p class="qcard__src">Discurso de aceitação do Nobel da Paz, Oslo, 10 de dezembro de 1964</p>
-    </li><li class="qcard" style="--i:6" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">O arco do universo moral é longo, mas se curva em direção à justiça.</p>
-      <p class="qcard__en" lang="en">The arc of the moral universe is long, but it bends toward justice.</p>
-      <p class="qcard__src">Montgomery, 25 de março de 1965 (ideia inspirada no abolicionista Theodore Parker)</p>
-    </li><li class="qcard" style="--i:7" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">Chega um tempo em que o silêncio é traição.</p>
-      <p class="qcard__en" lang="en">A time comes when silence is betrayal.</p>
-      <p class="qcard__src">“Beyond Vietnam”, Igreja Riverside, Nova York, 4 de abril de 1967</p>
-    </li><li class="qcard" style="--i:8" data-tilt>
-      <span class="qcard__mark" aria-hidden="true">“</span>
-      <p class="qcard__pt">Eu vi a Terra Prometida. Talvez eu não chegue lá com vocês.</p>
-      <p class="qcard__en" lang="en">I’ve seen the Promised Land. I may not get there with you.</p>
-      <p class="qcard__src">“I’ve Been to the Mountaintop”, Memphis, 3 de abril de 1968</p>
-    </li>
-    </ul>
-  </div>
-</section>
-
-<section class="chapter chapter--curiosidades paper" id="curiosidades" data-chapter="15" data-name="Curiosidades" data-scene="cards">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">15</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>O que pouca gente sabe</p>
-  <h2 class="chapter-title" data-anim="rise">Dez <em>curiosidades</em></h2>
-  <p class="lead">Vire as cartas.</p>
-</header>
-    <ul class="flips">
-      <li class="flip" style="--i:0">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">01</span><span class="flip__title">Ele nasceu Michael</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">Ele nasceu Michael</span><span class="flip__text">Na certidão, era Michael King. O nome Martin Luther veio em 1934, quando o pai o adotou em homenagem ao reformador alemão e o estendeu ao filho.</span></span>
-      </button>
-    </li><li class="flip" style="--i:1">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">02</span><span class="flip__title">Universitário aos 15</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">Universitário aos 15</span><span class="flip__text">Pulou duas séries no colégio e entrou no Morehouse College em 1944, com apenas 15 anos.</span></span>
-      </button>
-    </li><li class="flip" style="--i:2">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">03</span><span class="flip__title">Salvo de um espirro</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">Salvo de um espirro</span><span class="flip__text">Esfaqueado em 1958, ouviu dos médicos que um espirro poderia ter rompido sua aorta. Dez anos depois, citou no último discurso a carta de uma menina dizendo estar feliz por ele não ter espirrado.</span></span>
-      </button>
-    </li><li class="flip" style="--i:3">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">04</span><span class="flip__title">Um minuto com Malcolm X</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">Um minuto com Malcolm X</span><span class="flip__text">Os dois só se encontraram uma vez, em 26 de março de 1964, no Capitólio. A conversa durou cerca de um minuto — tempo suficiente para uma foto histórica.</span></span>
-      </button>
-    </li><li class="flip" style="--i:4">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">05</span><span class="flip__title">O sonho improvisado</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">O sonho improvisado</span><span class="flip__text">A parte mais famosa do discurso de 1963 não estava no texto preparado. King a improvisou depois que Mahalia Jackson pediu que falasse do sonho.</span></span>
-      </button>
-    </li><li class="flip" style="--i:5">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">06</span><span class="flip__title">O Nobel foi doado</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">O Nobel foi doado</span><span class="flip__text">King anunciou que todo o valor do Nobel da Paz de 1964 iria para o movimento pelos direitos civis.</span></span>
-      </button>
-    </li><li class="flip" style="--i:6">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">07</span><span class="flip__title">Um Grammy póstumo</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">Um Grammy póstumo</span><span class="flip__text">Em 1971, a gravação do discurso “Why I Oppose the War in Vietnam” ganhou o Grammy de melhor álbum falado.</span></span>
-      </button>
-    </li><li class="flip" style="--i:7">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">08</span><span class="flip__title">29 vezes preso</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">29 vezes preso</span><span class="flip__text">Segundo o King Center, King foi preso 29 vezes, muitas delas por acusações como “perturbação da ordem” ou por desobedecer ordens judiciais contra protestos.</span></span>
-      </button>
-    </li><li class="flip" style="--i:8">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">09</span><span class="flip__title">Fã de Star Trek</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">Fã de Star Trek</span><span class="flip__text">A atriz Nichelle Nichols, a tenente Uhura, contou que pensava em deixar a série quando conheceu King, que a convenceu a ficar pela importância de ver uma mulher negra num papel de destaque na TV.</span></span>
-      </button>
-    </li><li class="flip" style="--i:9">
-      <button type="button" class="flip__inner" aria-expanded="false">
-        <span class="flip__front"><span class="flip__num">10</span><span class="flip__title">A própria voz no funeral</span><span class="flip__hint">Toque para descobrir</span></span>
-        <span class="flip__back"><span class="flip__title flip__title--sm">A própria voz no funeral</span><span class="flip__text">No funeral, foi tocado um sermão gravado dois meses antes, em que King dizia que gostaria de ser lembrado como alguém que tentou servir aos outros.</span></span>
-      </button>
-    </li>
-    </ul>
-  </div>
-</section>
-
-<section class="chapter chapter--galeria" id="galeria" data-chapter="16" data-name="Galeria" data-scene="mosaic">
-  <div class="wrap">
-    <header class="chapter-head">
-  <span class="chapter-num" aria-hidden="true">16</span>
-  <p class="eyebrow"><span class="eyebrow__line"></span>Arquivo</p>
-  <h2 class="chapter-title" data-anim="blur"><em>Galeria</em></h2>
-  <p class="lead">Clique em uma foto para ampliar. Use as setas do teclado para navegar e Esc para fechar.</p>
-</header>
-    <ul class="gallery">
-      <li class="gallery__item g-tall">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Martin_Luther_King,_Jr..jpg/1920px-Martin_Luther_King,_Jr..jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/0/05/Martin_Luther_King,_Jr..jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King,_Jr..jpg?width=1280" data-alts="Martin_Luther_King_(cropped).jpg|Martin_Luther_King_Jr_NYWTS.jpg" data-cap="Retrato de 1964, por Dick DeMarsico." data-credit="Dick DeMarsico / New York World-Telegram &amp; Sun · Biblioteca do Congresso dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Martin_Luther_King,_Jr..jpg" aria-label="Ampliar: Retrato de 1964, por Dick DeMarsico.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Martin_Luther_King,_Jr..jpg/960px-Martin_Luther_King,_Jr..jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/0/05/Martin_Luther_King,_Jr..jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King,_Jr..jpg?width=960" data-alts="Martin_Luther_King_(cropped).jpg|Martin_Luther_King_Jr_NYWTS.jpg" alt="Martin Luther King Jr. em retrato de 1964" loading="lazy" decoding="async">
-        <span class="gallery__cap">Retrato de 1964, por Dick DeMarsico.</span>
-      </button>
-    </li><li class="gallery__item g-wide">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Martin_Luther_King_-_March_on_Washington.jpg/1920px-Martin_Luther_King_-_March_on_Washington.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/8/81/Martin_Luther_King_-_March_on_Washington.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_-_March_on_Washington.jpg?width=1280" data-alts="Martin_Luther_King_-_March_on_Washington_(cropped).jpg|Dr._Martin_Luther_King_Jr._at_a_civil_rights_march_on_Washington_D.C._in_1963.jpg" data-cap="Marcha sobre Washington, 1963." data-credit="Arquivo Nacional dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Martin_Luther_King_-_March_on_Washington.jpg" aria-label="Ampliar: Marcha sobre Washington, 1963.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Martin_Luther_King_-_March_on_Washington.jpg/960px-Martin_Luther_King_-_March_on_Washington.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/8/81/Martin_Luther_King_-_March_on_Washington.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Martin_Luther_King_-_March_on_Washington.jpg?width=960" data-alts="Martin_Luther_King_-_March_on_Washington_(cropped).jpg|Dr._Martin_Luther_King_Jr._at_a_civil_rights_march_on_Washington_D.C._in_1963.jpg" alt="King acena para a multidão na Marcha sobre Washington" loading="lazy" decoding="async">
-        <span class="gallery__cap">Marcha sobre Washington, 1963.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/March_on_washington_Aug_28_1963.jpg/1920px-March_on_washington_Aug_28_1963.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/7f/March_on_washington_Aug_28_1963.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/March_on_washington_Aug_28_1963.jpg?width=1280" data-alts="1963_march_on_washington.jpg|Civil_rights_march_on_Washington,_D.C..jpg" data-cap="A multidão no National Mall, 28 de agosto de 1963." data-credit="Arquivo Nacional dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:March_on_washington_Aug_28_1963.jpg" aria-label="Ampliar: A multidão no National Mall, 28 de agosto de 1963.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/March_on_washington_Aug_28_1963.jpg/960px-March_on_washington_Aug_28_1963.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/7f/March_on_washington_Aug_28_1963.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/March_on_washington_Aug_28_1963.jpg?width=960" data-alts="1963_march_on_washington.jpg|Civil_rights_march_on_Washington,_D.C..jpg" alt="Multidão reunida no National Mall durante a Marcha sobre Washington" loading="lazy" decoding="async">
-        <span class="gallery__cap">A multidão no National Mall, 28 de agosto de 1963.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Civil_rights_march_on_Washington,_D.C..jpg/1920px-Civil_rights_march_on_Washington,_D.C..jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/2/23/Civil_rights_march_on_Washington,_D.C..jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Civil_rights_march_on_Washington,_D.C..jpg?width=1280" data-alts="1963_march_on_washington.jpg|March_on_washington_Aug_28_1963.jpg" data-cap="Cartazes pedindo empregos e liberdade, 1963." data-credit="Warren K. Leffler / U.S. News &amp; World Report · Biblioteca do Congresso dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Civil_rights_march_on_Washington,_D.C..jpg" aria-label="Ampliar: Cartazes pedindo empregos e liberdade, 1963.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Civil_rights_march_on_Washington,_D.C..jpg/960px-Civil_rights_march_on_Washington,_D.C..jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/2/23/Civil_rights_march_on_Washington,_D.C..jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Civil_rights_march_on_Washington,_D.C..jpg?width=960" data-alts="1963_march_on_washington.jpg|March_on_washington_Aug_28_1963.jpg" alt="Manifestantes com cartazes na Marcha sobre Washington" loading="lazy" decoding="async">
-        <span class="gallery__cap">Cartazes pedindo empregos e liberdade, 1963.</span>
-      </button>
-    </li><li class="gallery__item g-tall">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coretta_Scott_King_1964.jpg/1920px-Coretta_Scott_King_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/74/Coretta_Scott_King_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_1964.jpg?width=1280" data-alts="Coretta_Scott_King_1964_(1).jpg|Coretta_Scott_King.jpg" data-cap="Coretta Scott King, 1964." data-credit="New York World-Telegram &amp; Sun · Biblioteca do Congresso dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Coretta_Scott_King_1964.jpg" aria-label="Ampliar: Coretta Scott King, 1964.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coretta_Scott_King_1964.jpg/960px-Coretta_Scott_King_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/7/74/Coretta_Scott_King_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_1964.jpg?width=960" data-alts="Coretta_Scott_King_1964_(1).jpg|Coretta_Scott_King.jpg" alt="Retrato de Coretta Scott King em 1964" loading="lazy" decoding="async">
-        <span class="gallery__cap">Coretta Scott King, 1964.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg/1920px-Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg?width=1280" data-cap="Rosa Parks, fevereiro de 1956." data-credit="Domínio público · Wikimedia Commons" data-page="https://commons.wikimedia.org/wiki/File:Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" aria-label="Ampliar: Rosa Parks, fevereiro de 1956.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg/960px-Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/ea/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Rosa_Parks_being_fingerprinted_by_Deputy_Sheriff_D.H._Lackey_after_being_arrested_on_February_22,_1956,_during_the_Montgomery_bus_boycott.jpg?width=960" alt="Rosa Parks sendo fichada pela polícia em 1956" loading="lazy" decoding="async">
-        <span class="gallery__cap">Rosa Parks, fevereiro de 1956.</span>
-      </button>
-    </li><li class="gallery__item g-wide">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Selma_to_Montgomery_Marches.jpg/1920px-Selma_to_Montgomery_Marches.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/99/Selma_to_Montgomery_Marches.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Selma_to_Montgomery_Marches.jpg?width=1280" data-alts="Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-cap="Selma a Montgomery, 1965." data-credit="Peter Pettus · Biblioteca do Congresso dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Selma_to_Montgomery_Marches.jpg" aria-label="Ampliar: Selma a Montgomery, 1965.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Selma_to_Montgomery_Marches.jpg/960px-Selma_to_Montgomery_Marches.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/99/Selma_to_Montgomery_Marches.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Selma_to_Montgomery_Marches.jpg?width=960" data-alts="Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" alt="Manifestantes na marcha de Selma a Montgomery" loading="lazy" decoding="async">
-        <span class="gallery__cap">Selma a Montgomery, 1965.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg/1920px-Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg?width=1280" data-alts="Selma_to_Montgomery_Marches.jpg" data-cap="Rumo a Montgomery, 1965." data-credit="Wikimedia Commons · autor e licença na página do arquivo" data-page="https://commons.wikimedia.org/wiki/File:Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" aria-label="Ampliar: Rumo a Montgomery, 1965.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg/960px-Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/9/94/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Abraham_Joshua_Heschel_in_Selma_to_Montgomery_march.jpg?width=960" data-alts="Selma_to_Montgomery_Marches.jpg" alt="Manifestantes na marcha de Selma a Montgomery" loading="lazy" decoding="async">
-        <span class="gallery__cap">Rumo a Montgomery, 1965.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg/1920px-Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg?width=1280" data-alts="LBJ_Civil_Rights_Act_crowd.jpg" data-cap="Lei dos Direitos Civis, 2 de julho de 1964." data-credit="Cecil Stoughton, Casa Branca · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" aria-label="Ampliar: Lei dos Direitos Civis, 2 de julho de 1964.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg/960px-Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/a/a9/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_signing_Civil_Rights_Act,_July_2,_1964.jpg?width=960" data-alts="LBJ_Civil_Rights_Act_crowd.jpg" alt="Assinatura da Lei dos Direitos Civis de 1964" loading="lazy" decoding="async">
-        <span class="gallery__cap">Lei dos Direitos Civis, 2 de julho de 1964.</span>
-      </button>
-    </li><li class="gallery__item g-tall">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg/1920px-Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg?width=1280" data-alts="LyndonJohnson_signs_Voting_Rights_Act_of_1965.jpg" data-cap="Johnson e King, 1965." data-credit="Yoichi Okamoto, Biblioteca LBJ · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" aria-label="Ampliar: Johnson e King, 1965.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg/960px-Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/64/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lyndon_Johnson_and_Martin_Luther_King,_Jr._-_Voting_Rights_Act.jpg?width=960" data-alts="LyndonJohnson_signs_Voting_Rights_Act_of_1965.jpg" alt="Lyndon B. Johnson e Martin Luther King Jr." loading="lazy" decoding="async">
-        <span class="gallery__cap">Johnson e King, 1965.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg/1920px-MLK_and_Malcolm_X_USNWR_cropped.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_and_Malcolm_X_USNWR_cropped.jpg?width=1280" data-cap="King e Malcolm X, 26 de março de 1964." data-credit="Marion S. Trikosko / U.S. News &amp; World Report · Biblioteca do Congresso dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:MLK_and_Malcolm_X_USNWR_cropped.jpg" aria-label="Ampliar: King e Malcolm X, 26 de março de 1964.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg/960px-MLK_and_Malcolm_X_USNWR_cropped.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/e/e1/MLK_and_Malcolm_X_USNWR_cropped.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_and_Malcolm_X_USNWR_cropped.jpg?width=960" alt="King e Malcolm X no Capitólio" loading="lazy" decoding="async">
-        <span class="gallery__cap">King e Malcolm X, 26 de março de 1964.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg/1920px-Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg?width=1280" data-cap="Em Nova York, com o prefeito Robert F. Wagner." data-credit="New York World-Telegram &amp; Sun · Biblioteca do Congresso dos EUA · domínio público" data-page="https://commons.wikimedia.org/wiki/File:Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" aria-label="Ampliar: Em Nova York, com o prefeito Robert F. Wagner.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg/960px-Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/49/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Coretta_Scott_King_and_Martin_Luther_King_and_Robert_F._Wagner_NYWTS.jpg?width=960" alt="Martin e Coretta Scott King com o prefeito Robert F. Wagner" loading="lazy" decoding="async">
-        <span class="gallery__cap">Em Nova York, com o prefeito Robert F. Wagner.</span>
-      </button>
-    </li><li class="gallery__item g-wide">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lorraine_Motel_Memphis.jpg/1920px-Lorraine_Motel_Memphis.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/6f/Lorraine_Motel_Memphis.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lorraine_Motel_Memphis.jpg?width=1280" data-alts="The_Lorraine_Motel,_site_of_the_Martin_Luther_King_assassination_and_the_National_Civil_Rights_Museum..jpg|Lorraine_Motel,_Memphis,_Tennessee.jpg" data-cap="Lorraine Motel, Memphis." data-credit="Wikimedia Commons · autor e licença livre na página do arquivo" data-page="https://commons.wikimedia.org/wiki/File:Lorraine_Motel_Memphis.jpg" aria-label="Ampliar: Lorraine Motel, Memphis.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Lorraine_Motel_Memphis.jpg/960px-Lorraine_Motel_Memphis.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/6/6f/Lorraine_Motel_Memphis.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/Lorraine_Motel_Memphis.jpg?width=960" data-alts="The_Lorraine_Motel,_site_of_the_Martin_Luther_King_assassination_and_the_National_Civil_Rights_Museum..jpg|Lorraine_Motel,_Memphis,_Tennessee.jpg" alt="O Lorraine Motel em Memphis" loading="lazy" decoding="async">
-        <span class="gallery__cap">Lorraine Motel, Memphis.</span>
-      </button>
-    </li><li class="gallery__item ">
-      <button type="button" class="gallery__btn" data-full="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/MLK_memorial_sculpture.jpg/1920px-MLK_memorial_sculpture.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/4c/MLK_memorial_sculpture.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_memorial_sculpture.jpg?width=1280" data-alts="The_Rev._Dr._Martin_Luther_King_Jr._Memorial.jpg|20111008-OC-LSC-0058_-_Flickr_-_USDAgov.jpg|Martin_Luther_King_Jr._Memorial.jpg" data-cap="Memorial em Washington, 2011." data-credit="Wikimedia Commons · autor e licença livre na página do arquivo" data-page="https://commons.wikimedia.org/wiki/File:MLK_memorial_sculpture.jpg" aria-label="Ampliar: Memorial em Washington, 2011.">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/MLK_memorial_sculpture.jpg/960px-MLK_memorial_sculpture.jpg" data-orig="https://upload.wikimedia.org/wikipedia/commons/4/4c/MLK_memorial_sculpture.jpg" data-fp="https://commons.wikimedia.org/wiki/Special:FilePath/MLK_memorial_sculpture.jpg?width=960" data-alts="The_Rev._Dr._Martin_Luther_King_Jr._Memorial.jpg|20111008-OC-LSC-0058_-_Flickr_-_USDAgov.jpg|Martin_Luther_King_Jr._Memorial.jpg" alt="Memorial Nacional Martin Luther King Jr." loading="lazy" decoding="async">
-        <span class="gallery__cap">Memorial em Washington, 2011.</span>
-      </button>
-    </li>
-    </ul>
-  </div>
-</section>
+<!-- SECOES -->
 
 </main>
-
-<!-- ============ RODAPÉ ============ -->
-<footer class="footer" id="fontes">
-  <div class="wrap">
-    <p class="footer__quote">“Free at last.”</p>
-    <div class="footer__cols">
-      <div>
-        <h2 class="footer__title">Fontes</h2>
-        <ul class="footer__list">
-          <li><a href="https://www.nobelprize.org/prizes/peace/1964/king/biographical/" target="_blank" rel="noopener">The Nobel Prize — Martin Luther King Jr., biografia</a></li>
-          <li><a href="https://kinginstitute.stanford.edu/" target="_blank" rel="noopener">Martin Luther King, Jr. Research and Education Institute — Universidade Stanford</a></li>
-          <li><a href="https://thekingcenter.org/" target="_blank" rel="noopener">The King Center — Atlanta</a></li>
-          <li><a href="https://www.nps.gov/malu/" target="_blank" rel="noopener">National Park Service — Parque Histórico Nacional Martin Luther King Jr.</a></li>
-          <li><a href="https://www.archives.gov/" target="_blank" rel="noopener">National Archives — Arquivo Nacional dos EUA</a></li>
-          <li><a href="https://www.loc.gov/" target="_blank" rel="noopener">Library of Congress — Biblioteca do Congresso dos EUA</a></li>
-          <li><a href="https://www.civilrightsmuseum.org/" target="_blank" rel="noopener">National Civil Rights Museum — Memphis</a></li>
-        </ul>
-      </div>
-      <div>
-        <h2 class="footer__title">Imagens</h2>
-        <p>Todas as fotos vêm do <a href="https://commons.wikimedia.org/" target="_blank" rel="noopener">Wikimedia Commons</a> e são de domínio público ou de licença livre. O crédito aparece em cada foto; clique nele para ver o autor e os termos exatos de uso na página do arquivo.</p>
-        <p>As citações aparecem em trechos curtos, com fins educativos. Os textos e discursos de Martin Luther King Jr. têm direitos administrados por seu espólio.</p>
-      </div>
-      <div>
-        <h2 class="footer__title">Créditos</h2>
-        <p>Site biográfico feito em HTML, CSS e JavaScript puros, publicado com GitHub Pages.</p>
-        <p>Tipografia: Playfair Display, Source Sans 3 e Special Elite (Google Fonts).</p>
-        <p class="footer__small">© <span id="ano">2026</span> · Projeto educativo, sem fins lucrativos.</p>
-        <a class="btn btn--ghost btn--sm" href="#inicio" data-magnetic><span>Voltar ao topo</span><i aria-hidden="true">↑</i></a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- ============ LIGHTBOX ============ -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada" hidden>
-  <div class="lightbox__backdrop" data-lb="close"></div>
-  <figure class="lightbox__stage">
-    <img class="lightbox__img" alt="">
-    <figcaption class="lightbox__caption"><span class="lightbox__cap"></span><a class="lightbox__credit" target="_blank" rel="noopener"></a><span class="lightbox__count"></span></figcaption>
-  </figure>
-  <button type="button" class="lightbox__btn lightbox__btn--prev" data-lb="prev" aria-label="Foto anterior">←</button>
-  <button type="button" class="lightbox__btn lightbox__btn--next" data-lb="next" aria-label="Próxima foto">→</button>
-  <button type="button" class="lightbox__btn lightbox__btn--close" data-lb="close" aria-label="Fechar (Esc)">✕</button>
-</div>
 
 <script src="script.js"></script>
 </body>
