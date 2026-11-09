@@ -170,5 +170,66 @@
   if (!reduced()) $$('[data-split]').forEach(splitWords);
   watchReveal($$('.reveal, [data-split]'));
 
+  /* ---------- Linha do tempo: marcadores, foto, ano e progresso ---------- */
+  (function timeline() {
+    var root = $('.tl');
+    if (!root) return;
+    var items = $$('.tl__item', root);
+    var shots = $$('.tl__shot', root);
+    var links = $$('.tl__index a', root);
+    var track = $('.tl__track', root);
+    var rail = $('.tl__rail', root);
+    var bar = $('.tl__progress', root);
+    var yearNum = $('.tl__year-num', root);
+    var countNum = $('.tl__count-num', root);
+    var current = -1;
+    var ticking = false;
+
+    function setActive(i) {
+      if (i === current) return;
+      var prev = current;
+      current = i;
+      items.forEach(function (it, k) {
+        it.classList.toggle('is-active', k === i);
+        it.classList.toggle('is-past', k < i);
+      });
+      shots.forEach(function (s, k) { s.classList.toggle('is-active', k === Math.max(i, 0)); });
+      links.forEach(function (a, k) {
+        if (k === i) a.setAttribute('aria-current', 'step'); else a.removeAttribute('aria-current');
+      });
+      var idx = Math.max(i, 0);
+      if (countNum) countNum.textContent = String(idx + 1).padStart(2, '0');
+      var y = items[idx].getAttribute('data-year');
+      if (yearNum && yearNum.textContent !== y) {
+        if (reduced() || prev === -1) { yearNum.textContent = y; }
+        else {
+          yearNum.classList.remove('is-rolling');
+          void yearNum.offsetWidth; /* reinicia a animação */
+          yearNum.classList.add('is-rolling');
+          setTimeout(function () { yearNum.textContent = y; }, 300);
+        }
+      }
+    }
+
+    function update() {
+      ticking = false;
+      var line = window.innerHeight * 0.5;
+      var active = -1;
+      items.forEach(function (it, k) {
+        if (it.getBoundingClientRect().top <= line) active = k;
+      });
+      setActive(active);
+      var r = track.getBoundingClientRect();
+      var p = Math.min(1, Math.max(0, (line - r.top) / Math.max(1, r.height - 40)));
+      rail.style.setProperty('--p', p.toFixed(4));
+      bar.style.setProperty('--p', p.toFixed(4));
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+
   /* <!-- JS-SECOES --> */
 })();
