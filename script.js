@@ -373,5 +373,90 @@
     });
   })();
 
+  /* ---------- Galeria + lightbox ---------- */
+  (function gallery() {
+    var btns = $$('.g__btn');
+    var lb = $('#lightbox');
+    if (!btns.length || !lb) return;
+    var img = $('.lightbox__img', lb);
+    var frame = $('.lightbox__frame', lb);
+    var capEl = $('.lightbox__cap', lb);
+    var creditEl = $('.lightbox__credit', lb);
+    var linkEl = $('.lightbox__link', lb);
+    var countEl = $('.lightbox__count', lb);
+    var fileEl = $('.lightbox__file', lb);
+    var idx = 0;
+    var opener = null;
+
+    function show(i) {
+      idx = (i + btns.length) % btns.length;
+      var b = btns[idx];
+      var file = b.getAttribute('data-file');
+      frame.classList.remove('is-vazia');
+      img.classList.remove('is-falhou', 'is-carregando');
+      img.removeAttribute('data-remoto');
+      img.setAttribute('data-commons', file);
+      img.setAttribute('data-w', '1600');
+      img.alt = b.getAttribute('data-cap');
+      img.src = 'assets/' + file;
+      fileEl.textContent = file;
+      capEl.textContent = b.getAttribute('data-cap');
+      creditEl.textContent = 'Foto: ' + b.getAttribute('data-autor') + ' · ' + b.getAttribute('data-licenca');
+      linkEl.href = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(file);
+      countEl.textContent = 'Foto ' + (idx + 1) + ' de ' + btns.length;
+      if (!reduced()) {
+        lb.classList.remove('is-switching');
+        void lb.offsetWidth;
+        lb.classList.add('is-switching');
+      }
+    }
+    function open(i, from) {
+      opener = from;
+      lb.hidden = false;
+      document.body.classList.add('no-scroll');
+      document.body.style.overflow = 'hidden';
+      show(i);
+      $('.lightbox__btn--close', lb).focus();
+    }
+    function close() {
+      lb.hidden = true;
+      document.body.style.overflow = '';
+      document.body.classList.remove('no-scroll');
+      if (opener) opener.focus();
+    }
+    btns.forEach(function (b, i) {
+      b.addEventListener('click', function () { open(i, b); });
+    });
+    lb.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-lb]');
+      if (!t) return;
+      var a = t.getAttribute('data-lb');
+      if (a === 'close') close();
+      else if (a === 'next') show(idx + 1);
+      else if (a === 'prev') show(idx - 1);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); show(idx - 1); }
+      else if (e.key === 'Tab') {
+        var f = $$('button, a[href]', lb).filter(function (el) { return el.offsetParent !== null; });
+        var k = f.indexOf(document.activeElement);
+        if (e.shiftKey && k <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && k === f.length - 1) { e.preventDefault(); f[0].focus(); }
+      }
+    });
+    /* deslizar no celular */
+    var x0 = null;
+    lb.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
+    lb.addEventListener('pointerup', function (e) {
+      if (x0 === null) return;
+      var dx = e.clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+    });
+  })();
+
   /* <!-- JS-SECOES --> */
 })();
