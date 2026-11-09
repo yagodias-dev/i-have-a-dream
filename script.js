@@ -458,5 +458,37 @@
     });
   })();
 
+  /* ---------- Legado: números que contam ao aparecer ---------- */
+  (function counters() {
+    var els = $$('[data-count]');
+    if (!els.length) return;
+    function fmt(v, el) {
+      var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      var s = v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+      return (el.getAttribute('data-prefix') || '') + s + (el.getAttribute('data-suffix') || '');
+    }
+    function run(el) {
+      var to = parseFloat(el.getAttribute('data-count'));
+      var t0 = null;
+      var dur = 1600;
+      function step(t) {
+        if (t0 === null) t0 = t;
+        var p = Math.min(1, (t - t0) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        el.textContent = fmt(to * e, el);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    els.forEach(function (el) { el.textContent = fmt(parseFloat(el.getAttribute('data-count')), el); });
+    if (reduced() || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { run(en.target); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.6 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
   /* <!-- JS-SECOES --> */
 })();
