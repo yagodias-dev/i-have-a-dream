@@ -1,40 +1,31 @@
-# Martin Luther King Jr. (1929–1968) — biografia ilustrada
+# Martin Luther King Jr. — O Sonho que Mudou a História
 
-Site biográfico sobre Martin Luther King Jr., em português, feito com HTML, CSS e JavaScript puros: sem framework e sem etapa de build. Funciona abrindo o `index.html` direto no navegador e é publicado no GitHub Pages.
+Site biográfico interativo sobre Martin Luther King Jr. (1929–1968), em português, feito com HTML, CSS e JavaScript puros — sem framework e sem etapa de build.
 
 ## Estrutura
 
 ```
 .
-├── index.html   # conteúdo: menu, hero, linha do tempo, momentos, citações, galeria, legado, quiz, rodapé
-├── style.css    # visual (tokens do DESIGN.md), animações e responsividade
-├── script.js    # tema, menu, revelações, linha do tempo, carrossel, lightbox, quiz
-├── DESIGN.md    # sistema visual: cores, tipografia, espaçamento, componentes, movimento
-├── assets/      # fotos (baixe do Wikimedia Commons; veja abaixo)
-└── .github/workflows/main.yml   # deploy automático no GitHub Pages
+├── index.html   # conteúdo (17 seções)
+├── style.css    # visual, animações de entrada e responsividade
+├── script.js    # abertura, rolagem, partículas, cursor, lightbox, linha do tempo
+├── README.md
+└── .github/workflows/main.yml   # deploy automático no GitHub Pages (já existe no repositório)
 ```
-
-## Imagens
-
-Cada foto procura primeiro `assets/<nome do arquivo no Commons>`. Se o arquivo não existir, o site carrega a mesma foto direto do Wikimedia Commons e, se isso também falhar, mostra um espaço reservado com o nome do arquivo.
-
-Para usar só arquivos locais:
-
-1. Baixe cada arquivo listado em **Créditos das imagens** (rodapé do site) e salve em `assets/` **com exatamente o mesmo nome**.
-2. No `index.html`, no script do `<head>`, troque `var USAR_COMMONS = true;` por `false`.
-
-No código, cada foto tem o comentário `TROCAR POR IMAGEM: <arquivo>` e o atributo `data-fonte` com a página do arquivo no Commons.
 
 ## Como publicar
 
-1. Faça commit e push na branch `main`.
-2. No GitHub, em **Settings → Pages → Build and deployment → Source**, escolha **GitHub Actions**.
-3. Quando o workflow terminar, o site fica em `https://<usuario>.github.io/<repositorio>/`.
+1. Substitua `index.html`, `style.css` e `script.js` do repositório por estes arquivos e adicione este `README.md`. Mantenha a pasta `.github`.
+2. Faça commit e push na branch `main`.
+3. No GitHub, abra **Settings → Pages** e, em **Build and deployment → Source**, escolha **GitHub Actions**.
+4. Acompanhe a aba **Actions**. Quando o workflow terminar, o site fica em `https://<seu-usuario>.github.io/<nome-do-repositorio>/`.
+
+Para testar no computador, abra a pasta no VS Code e use a extensão Live Server (ou rode `python -m http.server` e acesse `http://localhost:8000`).
 
 ## Créditos
 
-- Fotos: Wikimedia Commons (domínio público ou Creative Commons; autor e licença de cada uma no rodapé).
-- Pesquisa: The Nobel Prize, King Institute (Stanford), The King Center, National Park Service, National Archives, Library of Congress e National Civil Rights Museum.
-- Tipografia: Bodoni Moda, Public Sans e IBM Plex Mono (Google Fonts).
+- Fotos: Wikimedia Commons (domínio público ou licença livre). O crédito de cada foto leva à página do arquivo com autor e licença.
+- Fontes de pesquisa: The Nobel Prize, King Institute (Stanford), The King Center, National Park Service, National Archives e Library of Congress.
+- Tipografia: Playfair Display, Source Sans 3 e Special Elite (Google Fonts).
 
-O site respeita a preferência do sistema por menos movimento (`prefers-reduced-motion`) e tem tema claro e escuro.
+O site respeita a preferência do sistema por menos movimento e tem um botão "Movimento" no topo para desligar as animações.
