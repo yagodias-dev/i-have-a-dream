@@ -311,5 +311,67 @@
     }
   })();
 
+  /* ---------- Citações: carrossel acessível ---------- */
+  (function carousel() {
+    var root = $('[data-carousel]');
+    if (!root) return;
+    var slides = $$('.slide', root);
+    var dots = $$('.carousel__dots button', root);
+    var controls = $('.carousel__controls', root);
+    var viewport = $('.carousel__viewport', root);
+    var n = slides.length;
+    var idx = 0;
+
+    /* cada palavra da tradução entra com um pequeno atraso */
+    slides.forEach(function (s) {
+      var pt = $('.slide__pt', s);
+      var words = pt.textContent.trim().split(/\s+/);
+      pt.setAttribute('aria-label', pt.textContent.trim());
+      pt.innerHTML = '';
+      words.forEach(function (w, i) {
+        var sp = document.createElement('span');
+        sp.className = 'w2';
+        sp.setAttribute('aria-hidden', 'true');
+        sp.style.setProperty('--i', i);
+        sp.textContent = w;
+        pt.appendChild(sp);
+        if (i < words.length - 1) pt.appendChild(document.createTextNode(' '));
+      });
+    });
+
+    function go(i) {
+      idx = (i + n) % n;
+      slides.forEach(function (s, k) {
+        var on = k === idx;
+        s.classList.toggle('is-active', on);
+        s.setAttribute('aria-hidden', on ? 'false' : 'true');
+      });
+      dots.forEach(function (d, k) {
+        if (k === idx) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+      });
+      controls.setAttribute('data-count', String(idx + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0'));
+    }
+    root.classList.add('is-live');
+    go(0);
+
+    $$('.carousel__btn', root).forEach(function (b) {
+      b.addEventListener('click', function () { go(idx + parseInt(b.getAttribute('data-dir'), 10)); });
+    });
+    dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k); }); });
+    root.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(idx + 1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
+    });
+    /* deslizar no celular */
+    var x0 = null;
+    viewport.addEventListener('pointerdown', function (e) { x0 = e.clientX; });
+    viewport.addEventListener('pointerup', function (e) {
+      if (x0 === null) return;
+      var dx = e.clientX - x0;
+      x0 = null;
+      if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+    });
+  })();
+
   /* <!-- JS-SECOES --> */
 })();

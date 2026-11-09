@@ -1213,4 +1213,146 @@ main:focus-visible { outline: none; }
   .facts { grid-template-columns: 1fr 1fr; }
 }
 
+/* 8. CITAÇÕES -------------------------------------------------------------- */
+.quotes { border-top: 1px solid var(--line); overflow: hidden; }
+.carousel { position: relative; }
+.carousel__mark {
+  position: absolute;
+  top: -.32em;
+  left: -.06em;
+  font-family: var(--f-display);
+  font-size: clamp(14rem, 8rem + 20vw, 28rem);
+  line-height: 1;
+  color: var(--brick);
+  opacity: .22;
+  pointer-events: none;
+  user-select: none;
+}
+.carousel__viewport {
+  position: relative;
+  display: block;
+  min-height: clamp(260px, 30vw, 420px);
+  padding-left: clamp(0px, 8vw, 140px);
+  touch-action: pan-y;
+}
+.slide { grid-area: 1 / 1; align-self: center; }
+.js [data-carousel].is-live .carousel__viewport { display: grid; }
+.js [data-carousel].is-live .slide { visibility: hidden; }
+.js [data-carousel].is-live .slide.is-active { visibility: visible; }
+.slide__pt {
+  max-width: 22ch;
+  margin-bottom: var(--s-4);
+  font-family: var(--f-display);
+  font-size: var(--t-quote);
+  font-weight: 500;
+  font-variation-settings: "opsz" 96;
+  line-height: 1.1;
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+.slide__en {
+  max-width: 52ch;
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: clamp(1.1rem, 1rem + .4vw, 1.35rem);
+  color: var(--ink-2);
+}
+.slide__src {
+  max-width: 60ch;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--line-strong);
+  color: var(--gold);
+  text-transform: none;
+  letter-spacing: .04em;
+}
+.slide__src [lang="en"] { font-style: italic; }
+.js [data-carousel].is-live .slide .w2 {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(.4em);
+  filter: blur(4px);
+}
+.js [data-carousel].is-live .slide.is-active .w2 {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: opacity 700ms var(--ease), transform 900ms var(--ease), filter 700ms var(--ease);
+  transition-delay: calc(var(--i) * 45ms);
+}
+.js [data-carousel].is-live .slide .slide__en,
+.js [data-carousel].is-live .slide .slide__src { opacity: 0; transform: translateY(10px); }
+.js [data-carousel].is-live .slide.is-active .slide__en,
+.js [data-carousel].is-live .slide.is-active .slide__src {
+  opacity: 1;
+  transform: none;
+  transition: opacity 700ms var(--ease) 450ms, transform 700ms var(--ease) 450ms;
+}
+.carousel__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-5);
+  padding-left: clamp(0px, 8vw, 140px);
+}
+.no-js .carousel__controls, html:not(.js) .carousel__controls { display: none; }
+.carousel__btn {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+}
+.carousel__btn:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+.carousel__btn:active { transform: translateY(1px); }
+.carousel__dots { list-style: none; display: flex; gap: 2px; }
+.carousel__dots button {
+  position: relative;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  font-family: var(--f-mono);
+  font-size: .75rem;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.carousel__dots button::after {
+  content: "";
+  position: absolute;
+  left: 10px; right: 10px; bottom: 8px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 500ms var(--ease);
+}
+.carousel__dots button:hover { color: var(--ink); }
+.carousel__dots button[aria-current="true"] { color: var(--gold); }
+.carousel__dots button[aria-current="true"]::after { transform: scaleX(1); }
+.quotes__note {
+  margin-top: var(--s-5);
+  padding-left: clamp(0px, 8vw, 140px);
+  max-width: 70ch;
+  font-size: .85rem;
+  color: var(--ink-2);
+}
+html:not(.js) .slide { margin-bottom: var(--s-6); }
+@media (max-width: 560px) {
+  .carousel__viewport, .carousel__controls, .quotes__note { padding-left: 0; }
+  .carousel__mark { opacity: .14; }
+  .carousel__dots { display: none; }
+  .carousel__controls { justify-content: space-between; }
+  .carousel__controls::before {
+    content: attr(data-count);
+    order: 1;
+    font-family: var(--f-mono);
+    font-size: .8rem;
+    color: var(--ink-2);
+  }
+  .carousel__btn[data-dir="1"] { order: 2; }
+}
+
 /* <!-- CSS-SECOES --> */
